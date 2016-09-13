@@ -1,0 +1,85 @@
+\chapter{Introduction}
+One of main goals in computational mathematics is to predict unknown situation or 
+to study known natural phenomena via numerical simulation. This is achieved by employing 
+mathematics equations to describe the physics phenomena, numerically solving these 
+equations and analyzing the results to find the answer to the original question. 
+Because not all the equations have an analytic solution and some phenomena may be too 
+difficult to duplicate or observe through laboratory experiment, the numerical approach 
+plays as an essential role in scientific research.
+
+\section{Motivation}
+In this dissertation, two research topics are proposed from atmospheric science and 
+engineering field, and studied using numerical simulation and mathematics tool.
+It will be shown later that even if these two topics are loosely related to each other 
+as they appear, they can be described using a similar mathematics model and solved by
+employing the same numerical method.
+
+The first research studies the entrainment and mixing process at the cloudy-clear air interface. 
+During the entrainment and mixing process, a preexisting cloud will capture and engulf a wind flow 
+of entrainmental air deep into the cloud core. As turbulent mixing develops, these volumes are 
+stretched and compressed into thinner filaments until the Kolmogorov scale is reached, where final 
+homogenization occurs through the molecular diffusion process. Finally, the environmental air becomes 
+part of the current cloud and eventually influence the entire cloud dynamics. Through condensation, 
+evaporation, collision and coalescence, the entrainment and mixing process will change the distribution 
+of water droplets in the cloud, which directly determine the cloud life time and rain formation. 
+However, it was poorly understood that whether the reduction of liquid water in cloud 
+was through the reduction of only droplet size, or only the number of droplets, or both the number 
+and size. To quantify these phenomena helps capturing the details of turbulent transportation and 
+dilution of cloud water, and provides significant parameters for representing clouds in coarse-resolution 
+cloud model.
+
+The second research focuses on the study of parachute deceleration system in turbulence flows.
+Since building a qualified wind tunnel could be very expensive and testing a novel parachute in 
+reality is extremely risky to the parachutist, numerical simulation is regarded as a safe 
+and economical solution comparing to the laboratory experiment. It has been known that a lot of factors
+may affect the inflation of the parachute, and therefore it is significant to know that in what condition
+the parachute will fail to perform appropriately. For example, an angled drop of the parachute may lead
+to the inversion of the canopy; the permeability of the parachute canopy can affect the stability of the 
+deceleration; the parachute canopies in the parachute cluster may collide and twist with each other, and thus 
+damage the deceleration process. Therefore, a deep understanding of these phenomena can help the engineer to 
+improve the performance of the parachute as well as preventing some potential risks in reality.
+
+Although numerical approach has a great advantage over the traditional experiment, there still exists 
+several downsides and challenges for the numerical approach. Firstly, the correctness of the numerical method almost 
+relies on the mathematics model, which may be not good enough to represent every detail of 
+the original problem. Neglecting any features could differ the numerical results from the laboratory experiments. 
+Secondly, the convergence and stability of the numerical algorithm
+is still the main concern for the computational method. In spite of many progresses in the near decades, 
+there is no such a "black-box" numerical algorithm that can solve any problem. For example, an effective 
+method may become ineffective when applying to other problems; a method may fail if the environment changes 
+significantly during the simulation; a combination of multiple high accurate 
+methods may not achieve the desired order if they are not used appropriately.
+Finally, some approach, like direct numerical simulation, requires a certain resolution to be effective.
+This brings very high computational cost, sometimes exceed the capacity of the most powerful computers currently 
+available.
+
+The main goal of this dissertation is to develop an accurate and efficient numerical method to help understand 
+the above problems. 
+\section{Contribution}
+The contributions presented in this dissertation have been published in several journals 
+and conference proceedings. Below is the list of publications:
+
+\section{Outline}
+This dissertation is structured as follows.
+
+\chapter{Literature review}
+It's worthwhile to notice that these loosely related topics can be described 
+using a similar model and numerically solved without any modifications. 
+In the first study, the water droplets are represented as a group of particles interacting 
+with turbulence environment. The particles are driven by the turbulence flow and has phase 
+transition between water vapor and liquid. In the second study, the parachute canopy is built 
+with a connected particle system. This system can be regarded as an elastic surface immersed in 
+the surrounding fluid.
+
+Particles are objects with no extent, while having mass $m$, position
+$\mathbf{x}$ and velocity $\mathbf{v}$, and responding to forces $\mathbf{f}$.
+Because they are simple, particles can be regarded as the easiest objects to
+simulate. In spite of simplicity, particles can be powerful to model a
+wide range of interesting behavior. For example, an unconnected particle group
+can be used to simulate the water droplets in the research of cloud
+microphysics; an elastic membrance can be built by connecting particles with
+simple damped springs. 
+\section{Particle model in cloth simulation}
+ 
+
+\section{Particle model in entrainment and mixing}

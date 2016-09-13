@@ -1,8 +1,8 @@
 proj=Dissertation
 
-$(proj).pdf: abstract.tex acknowledge.tex dedication.tex Dissertation.tex frontispiece.tex prelim.tex publication.tex
+$(proj).pdf: abstract.tex dedication.tex Dissertation.tex prelim.tex introduction.tex parachute.tex entrainment.tex
 	pdflatex $(proj)
-	#bibtex $(proj)
+	bibtex $(proj)
 	pdflatex $(proj)
 	rm *.aux
 clean:
