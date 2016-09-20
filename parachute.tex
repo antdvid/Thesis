@@ -1,145 +1,98 @@
 \chapter{Application to parachute simulation}
+Parachute simulation is a complex system coupling many aspects such as 
+elastic mechanics and fluid dynamics. In this chapter, a detailed description 
+of the underlying model is presented. A novel particle-based cloth model is 
+developed to mimic the in-plane energy by introducing the angular 
+stiffness. This model is then coupled with fluid dynamics through impulse 
+method. In order to better simulate the turbulence effects, a zero-equation 
+turbulence model is replaced with a two-equation model. We also proposed a new 
+porosity model for the fabric surface to consider the porosity effects. 
+In addition, a new collision handling function is developed to treat the collision among 
+fabric surface, rigid body and suspension lines.
 
-\section{Research motivation}
-The parachute system is a complex system requiring
-detailed study of many aspects in elastic mechanics and fluid dynamics. In the
-past decades, many authors have made efforts to achieve an efficient
-computational method for a realistic parachute simulation.  In Takizawa and
-Tezduyar et al.'s series work \cite{Stein2000,Kalro2000}, a parallel computing
-platform based on finite element method was proposed for the parachute
-fluid-structure interactions. Their work has been extended to a few types of
-parachute, such as parachute clusters \cite{Takizawa2010}, ringsail parachute
-\cite{Tezduyar2008}, cross parachute \cite{Stein2001} and spacecraft parachute
-\cite{Takizawa2013}. The geometric porosity of parachute canopy was also
-studied in \cite{Takizawa2013porosity}.  Peskin and Kim developed a
-computational method based on the immersed boundary method for parachute
-simulation in \cite{Kim2006,Kim2009}.  In their method, the parachute was
-treated as an extremely thin shell immersed in the fluid field. Since no need
-for regeneration of mesh grid every time step, their algorithm was proved to be
-more efficient than the finite element method in the expense of accuracy near
-the parachute. Tutt et al. simulated the parachute through LS-DYNA code
-\cite{Tutt2005, Aquelet2007}, in which an Eulaerian-Lagrangian penalty
-algorithm was used to replicate the inflation of round canopies in a water
-tunnel. In the author's previous work \cite{Kim2013,Li2013}, a mesoscale model
-in effects to mimic the dynamic motion of a fabric surface was proposed and
-coupled with an incompressible fluid solver for the study of parachute
-inflating and descending. This method was then enhanced in \cite{Shi2015} by
-incorporating the angular stiffness to the spring mass system, so as to
-duplicate the physical properties of the continuum material, such as Young's
-modulus and Poisson ratio.
-
-In spite of many progresses in the simulation of parachute, to capture the
-details of turbulent motions and its interactions with elastic material is
-still a challenge in the computing field.  Firstly, the major concern on the
-fabric simulation is the accurate modeling and prediction of the highly
-non-linear behavior of cloth with the consideration of efficiency, stability,
-and visual realism \cite{Choi2005}. Until now, the most successful physics
-based simulation techniques were the interacting particle model proposed in the
-computer graphics community, such as \cite{Baraff1998, Choi2002}. However, due
-to the nonlinear hysteretic propeties of the fabric, the current simple linear
-model will generate more characteristic of a rubbery material than of a cloth.
-Simply introducing a prescribed non-linear law can still hardly duplicate the
-real fabric behavior, but may increase the computational cost. The alternative
-approach, continuum model with finite element method, has the advantage of
-handling the nonlinearity, but still has problems in several factors, such as
-high computational cost and non-trivial collision resolution.  Secondly, the
-flow field around the parachute is usually high with Reynolds number of
-serveral millions, which results in a development of the turbulent boundary
-layer.  This implies that an accurate and reliable turbulence model is
-necessary for the calculation of drag force to the parachute canopy. However,
-the lack of any comprehensive experimental data for the flow around parachute
-makes an emprically justified choice extremely difficult. In addition, the
-action of the flow in direct vicinity to the fabric surface is much stronger
-than the rest of the boundary layer, thus its effect has to be taken into
-account. Correct simulation of the flow in this viscous sublayer needs either
-incoprating the experical wall laws or adjusting the turbulence model down to
-the wall. All these factors may add some uncertainties to the parachute
-simualtion.  Finally, besides elasticity, the most important property of the
-parachute fabric is the permeability, which allows a fraction of the
-free-stream flow go through the canopy surface and stabilizes the descent of
-the parachute \cite{Johari2005}. An accurate simulation of the porous structure
-in the pore level is extremely difficult with the current computational
-resource. Therefore, proposing a relatively accurate but inexpensive
-computational algorithm for porosity modeling becomes significant.
-
-In this paper, a computational study of parachute inflation is presented
-through the application of the front tracking method, which is originally
-designed for problem with moving interfaces \cite{Glimm1998, Tryggvason2001,
-Hu2015}. The front tracking method has been implemented as an open source
-software library named \textit{FronTier}. In this frame work, the fabric
-surface is treated as a connected particle group whose motion is driven by
-gravity, fluid pressure and interior force computed by spring mass model. The
-surrounding airflow is described by the incompressible Navier-Stokes equation
-and numerically solved by the projection method.  Besides the previous work,
-the authors have made many other efforts to increase the realistically of the
-simulation. Firstly, a simplified porosity model based on ghost fluid method
-(GFM) \cite{Kang2000} is developed to model the fabric porosity. The main idea
-of this algorithm is to add a resistance to the fluid field. This resistance is
-then coupled with the projection method by affecting the pressure Poisson
-equation. This method has the advantage of being consistent with Darcy's law
-and keeping the symmetry of the coefficient matrix. Secondly, a robust fabric
-collision handling algorithm based on \cite{Bridson2005} is implemented to
-model the multi-parachute collision. This method applies the iteration
-methodology and can guarantee no intersections in the fabric surface after a
-successful handling procedure. Moreover, a rigid body is attached in place of
-the load node, in order to consider the influence of the wake flow on the
-parachute inflation. By varying the shape of the cargo, such as cube, sphere
-and human body, different wake patterns can be achieved. Finally, a hybrid
-computing technique, that combines the GPU computing of particles and
-distributed parallel computing of fluid field, is used to accelerate the
-computational speed.
-
-\section{Numerical Model}
-\subsection{Fabric modeling} 
+\section{Fabric Model}
+\subsection{Internal Energy and Forces}
 Modeling of fabric surface poses more challenges than
 a smooth interface. A fabric surface may fold and wrinkle, thus making it
 difficult to model than an elastic plate. We proposed a mesoscale model using
 the spring-mass system and strengthened it by the inclusion of both tensile and
 angular stiffness, a model originally proposed by Delingette \cite{Delinget2008}.
-In this model, the energy of membrane $W(T_{\vect{X}_{0}})$ that is required to
-deform a single triangle $T_{\vect{X}_{0}}$ with vertices
-$\{\vect{X}_{10},\vect{X}_{20},\vect{X}_{30}\}$ into its deformed position
-$T_{\vect{X}}$ with vertices $\{\vect{X}_{1,},\vect{X}_{2},\vect{X}_{3}\}$
-consists of two parts: \begin{itemize} \item the energy of three tensile springs
-that prevent edges from stretching; \item the energy of three angular springs
-that prevent any change of vertex angles.  \end{itemize} For a triangle in
-equilibrium $T_{\vect{X}_{0}}$, the initial states are given by area
-$A_{\vect{X}_{0}}$, angles $\alpha_{i}$, and lengths $l_{ij}^{0}$
-($i,j\in{1,2,3}, j\neq i$) in equilibrium while $A_{\vect{X}}$, $\beta_{i}$ and
-$l_{ij}$ denote the area, angles, and lengths of the deformed triangle
-$T_{\vect{X}}$ respectively.
+The mathematics model for $n$ particles system is formulated as the following ordinary differential system:
+\begin{eqnarray}
+\dot{\vect{v}} = \vect{M}^{-1}(-\frac{\partial W}{\partial \vect{x}} 
+				+ \vect{f}_d + \vect{f}_e) \label{eq:spring_model}\\
+\dot{\vect{x}} = \vect{v}
+\end{eqnarray}
+where the vector $\mathbf{x}$ and $\mathbf{v}$ are vectors with length of $3n$, representing the position vector and velocity vector for the particles, respectively; diagonal matrix $\mathbf{M} \in \mathbb{R}^{3n\times 3n}$ represents the mass distribution of the cloth; $W$ is a scalar function describing the cloth internal energy, $\lambda$ is the damping ratio to stabilize the system; $\vect{f}_d$ is the damping function that will be discussed later; $\mathbf{f}_e$ is the external force (such as air-drag, gravity, contact constrains, etc.) acting on the cloth.
 
-The potential energy is given \cite{Delinget2008} as \[
-W(T_{\vect{X}_{0}})=\sum_{\substack{i=1\\j=(i+1)\ mod\
-3}}^{3}\frac{1}{2}\kappa_{ij}^{T_{\vect{X}_{0}}}
+This model is well defined except the energy function $W$. 
+In fact, the energy that is required to
+deform a single triangle $T_{\vect{x}_{0}}$ with vertices
+$\{\vect{x}_{10},\vect{x}_{20},\vect{x}_{30}\}$ into its deformed position
+$T_{\vect{x}}$ with vertices $\{\vect{x}_{1},\vect{x}_{2},\vect{x}_{3}\}$
+consists of two parts: 
+
+\begin{itemize} 
+\item the energy of three tensile springs
+that prevent edges from stretching; 
+\item the energy of three angular springs
+that prevent any change of vertex angles.  
+\end{itemize} 
+
+For a triangle in
+equilibrium $T_{\vect{x}_{0}}$, the initial states are given by area
+$A_{\vect{x}_{0}}$, angles $\alpha_{i}$, and lengths $l_{ij}^{0}$
+($i,j\in{1,2,3}, j\neq i$) in equilibrium while $A_{\vect{x}}$, $\beta_{i}$ and
+$l_{ij}$ denote the area, angles, and lengths of the deformed triangle
+$T_{\vect{x}}$ respectively.
+
+The potential energy for a single triangle is given as \cite{Delinget2008} 
+\[
+W(T_{\vect{x}_{0}})=\sum_{\substack{i=1\\j=(i+1)\ mod\
+3}}^{3}\frac{1}{2}\kappa_{ij}^{T_{\vect{x}_{0}}}
 (dl_{ij})^{2}+\sum_{\substack{i=1\\j=(i+1)\ mod\ 3\\k=(i+2)\ mod\
-3}}^{3}\gamma_{i}^{T_{\vect{X}_{0}}}dl_{ij}dl_{ik} \]
+3}}^{3}\gamma_{i}^{T_{\vect{x}_{0}}}dl_{ij}dl_{ik} 
+\]
 
 where \[
-\kappa_{ij}^{T_{\vect{X}_{0}}}=\frac{(l_{ij}^{0})^{2}(2\cot^{2}\alpha_{k}
-(\lambda+\mu)+\mu)}{8A_{\vect{X}_{0}}} \] is the tensile stiffness and
+\kappa_{ij}^{T_{\vect{x}_{0}}}=\frac{(l_{ij}^{0})^{2}(2\cot^{2}\alpha_{k}
+(\lambda+\mu)+\mu)}{8A_{\vect{X}_{0}}} \] 
+is the tensile stiffness and
 \begin{equation}
-\gamma_{i}^{T_{\vect{X}_{0}}}=\frac{l_{ik}^{0}l_{ij}^{0}(2\cot\alpha_{j}
-\cot\alpha_{k}(\lambda+\mu)-\mu)}{8A_{\vect{X}_{0}}} \label{eq:angular_stiff}
-\end{equation} is the angular stiffness, $\gamma$ and $\mu$ are the Lam\'{e}
+\gamma_{i}^{T_{\vect{x}_{0}}}=\frac{l_{ik}^{0}l_{ij}^{0}(2\cot\alpha_{j}
+\cot\alpha_{k}(\lambda+\mu)-\mu)}{8A_{\vect{x}_{0}}} \label{eq:angular_stiff}
+\end{equation} 
+is the angular stiffness, $\gamma$ and $\mu$ are the Lam\'{e}
 coefficients of the material.  These coefficients are simply related to the two
 physically meaningful parameters defined in planar elasticity for a membrane,
 that is, Young's modulus $E$ and the Poisson ratio $\nu$ \cite{Gere2004}:
 $$\lambda=\frac{E\nu}{1-\nu^{2}} ~~~{\rm and}~~~
-\mu=\frac{E(1-\nu)}{1-\nu^{2}}.$$ Young's modulus quantifies the stiffness of
+\mu=\frac{E(1-\nu)}{1-\nu^{2}}.$$ 
+Young's modulus quantifies the stiffness of
 the material, whereas the Poisson ratio characterizes the material
-compressibility.  The resulting force on each vertex of the spring system is
-therefore \begin{eqnarray} \nonumber \vect{F}_{ij} & = &
+compressibility. The elastic force on each vertex of the spring system is
+therefore computed by computing the derivative of the energy with respect 
+to the node position $\mathbf{x}_i$.
+
+\begin{eqnarray*} 
+\nonumber 
+\vect{F}_i(T_{\vect{x}}) & = & -\frac{\partial W}{\partial \vect{x}_i}\\
+& = &
+\sum_{j \neq i}
 ((\kappa_{ij}^{T_{1}}+\kappa_{ij}^{T_{2}})dl_{ij}+
 (\gamma_{i}^{T_{1}}dl_{im}+\gamma_{j}^{T_{1}}dl_{jm}+
 \gamma_{i}^{T_{2}}dl_{in}+\gamma_{j}^{T_{2}}dl_{jn}))\vect{e}_{ij} \\ & = &
+\sum_{j \neq i}
 \tilde{\kappa}_{ij}dl_{ij}\vect{e}_{ij}+\tilde{\gamma}_{ij}dl_{ij} \vect{e}_{ij}
-\label{eq:v_force} \end{eqnarray} where
+\label{eq:v_force} 
+\end{eqnarray*} 
+
+where
 $\tilde{\kappa}_{ij}=\kappa_{ij}^{T_{1}}+\kappa_{ij}^{T_{2}}$,
 $\tilde{\gamma}_{ij}=(\gamma_{i}^{T_{1}}dl_{im}+
 \gamma_{j}^{T_{1}}dl_{jm}+\gamma_{i}^{T_{2}}dl_{in}+
 \gamma_{j}^{T_{2}}dl_{jn})/dl_{ij}$ and $\vect{e}_{ij}$ is the unit vector from
-$\vect{X}_i$ to $\vect{X}_j$.
+$\vect{x}_i$ to $\vect{x}_j$.
 
 \begin{figure}[!ht] \centering \begin{tabular}{cc}
 \epsfig{file=Figures/goremesh,width=0.55\hsize} \end{tabular} \caption{The
@@ -155,48 +108,50 @@ stiffness.} \label{fig:goremesh} \end{figure}
 Numerical implementation and testing have shown that such model is robust and
 conforms with both the Young modulus and Poisson ratio of a given fabric
 material. \Fig{fig:goremesh} demonstrates the mesh structure of such model.
+In many literatures \cite{}, the internal force is decomposed to several parts,  
+such as stretch forces, shear forces and bend forces. Our model is based on the 
+formulation for elastic membrane, and thus only the in-plane forces are considered. 
+The bend forces are relatively small comparing to the the other forces, so 
+that is neglected in the current model.
 
-\subsection{Fluid-fabric interaction} 
-The fluid flow is computed by solving the incompressible Navier-Stokes equation
-using finite difference method with high order coupling at the boundary and
-interior interface. To simplify the interaction between the fabric surface such
-as the parachute canopy and the fluid and to avoid harmful damping to the
-external driving force, we use a special method that separates the impulse from
-the external driving forces such as the gravity and fluid pressure, and the
-impulse due to internal force each mass point receives from its neighboring
-points.  
-\begin{equation} \vect{I}^c_i =
-\vect{I}^c_{gi}+\vect{I}^c_{pi}+\vect{I}^c_{si} \label{eq:impulse_cnp}
-\end{equation} 
-In our method, the external impulse (due to gravity and
-pressure) is time integrated for each mass point, that is 
+\subsection{Additional Forces and Damping function}
+In order to interact with the environment, we also added external forces, such as gravity 
+and air-drag, to the internal forces. The gravity force is a constant force, and thus easy to implement:
 \begin{equation}
-\vect{I}_{gi}=\int_0^tm\vect{g}dt 
-\end{equation} 
-for both canopy and string chord mass points and 
-\begin{equation} \vect{I}_{pi}=\int_0^t\sigma
-(p^--p^+)\vect{n}dt 
-\end{equation} 
-for canopy points only, where $p^-$ and $p^+$ are the pressure on lower and
-upper sides of the parachute canopy, $\sigma$ is the mass density of canopy per
-unit area, and $\vect{n}$ is the unit normal vector pointing from lower to
-upper side of the canopy.
+\vect{f}_{g,i} = m_i \vect{g}
+\end{equation}
+An accurate calculation of air-drag should include both the velocity shear (friction drag) and the stress (pressure drag) to the surface. However, since calculating the friction drag requires substantially more computational resources to resolve the boundary layer and its contribution to the drag force is minor in comparison with the pressure drag for the bluff body \cite{}, we have followed \cite{KalroTezduyar2000} to neglect the friction forces in the  current model, then the air-drag is formulated on a per-point basis:
+\begin{equation}
+\vect{f}_{p,i} = \sigma(p_i^- - p_i^+)\vect{n} \label{eq:drag}
+\end{equation}
+where $p_i^-$ and $p_i^+$ are the pressure of point $i$ on lower and upper sides of the canopy, $\sigma$ is the mass density of canopy per unit area, and $\vect{n}$ is the unit normal vector pointing from lower to upper side of the canopy. The pressure $p^-$ and $p^+$ are calculated by making use of the left state and right state of the interface point in the front tracking method.
 
-\subsection{Turbulence modeling} \label{sec:turbulence}
-We solve the incompressible
-Navier-Stokes equation using the the projection method
-\cite{Chorin68,BroCorMin01} and couple the fluid equation with the canopy
-surface through the impulse method \cite{KimLiLi12}. Due to large Reynolds
-number (which is in the magnitude of several millions for a full-scale parachute
-canopy\cite{Johari2005}), turbulence model is needed.  We apply the eddy viscosity
-models based on the Reynolds Averaged Navier-Stokes (RANS) equation.  The
+Robust dynamic cloth simulation is critically dependent on well-chosen damping forces \cite{}. A strong damping force must be applied to the spring system with strong stretch force to prevent anomalous in-plane oscillations. However, this strong damping force should confine itself solely to damping in-plane motions without affecting other forces. In previous literatures \cite{}, the in-plane damping force for point $i$ is chosen as:
+\begin{equation}
+\vect{f}_{d,i} = -k_d m_i\sum_{j \neq i}(\vect{v}_i - \vect{v}_j)^T\vect{e}_{ij}\vect{e}_{ij}
+\label{eq:damping_1} 
+\end{equation}
+It is tempting to formulate a damping function as above. However, this damping function only works for the case with fabric surface solely and gives nonsensical results for the case involving fabric connecting with strings. An alternative method is \cite{Terzopoulos87, Terzopoulos88, Carignan1992, Platt1988}'s treatment of cloth that used a simple viscous damping function which dissipated kinetic energy. We improve this method by subtracting the damping function with the external impulses, so that its influence on the external forces can be excluded:
+\begin{equation}
+\vect{f}_{d,i} = -k_d m_i(\vect{v}_i-I_{ext,i})
+\end{equation}
+where $I_{ext,i}(t,\vect{x}_i) = \int_0^t (\vect{f}_{g,i} + \vect{f}_{p,i}) dt$.
+This method works well for all our cases including the joint fabric and strings, and produces visually appealing results. One problem of this method is that a linear function of velocity does not match the quartic energy functions of the continuum formulation \cite{Baraff1998}, but will put this as future studies in the new paper.
+ 
+\subsection{Fluid-fabric Coupling}
+As discussed above, the fluid affects the motion of parachute canopy through the pressure drag and friction drag on the surface. In the opposite side, the parachute canopy is treated as an internal moving boundary for the fluid field. In this dissertation, the fluid field is modeled with incompressible Navier-Stokes equation, whose dynamics is controlled by the boundary conditions. The external boundary, such as inflow, outflow, periodic and wall boundaries can be handled trivially by defining an appropriate boundary condition following the underlying numerical scheme. As for the internal boundaries, the parachute canopy, we use the normal velocity computed from the ODEs of the spring system as the boundary value. Therefore, at each time step, we solve a Dirichlet boundary problem for the Naiver-Stokes equation.
+
+\section{Turbulence modeling} \label{sec:turbulence}
+Due to large Reynolds number (which is in the magnitude of several millions for a full-scale parachute canopy\cite{Johari2005}), turbulence model is required to accurately predict the the motion of the parachute system. A simple approach is to apply an appropriate eddy viscosity models based on the Reynolds Averaged Navier-Stokes (RANS) equation. The
 hydrodynamic behavior of a turbulent incompressible fluid is governed by the
-RANS equations for the mean velocity $U$ and pressure $p$ \begin{equation}
-\begin{aligned} \frac{\partial U}{\partial t}+U\cdot\nabla U = -\nabla p +
-\nabla\cdot((\nu+\nu_T)[\nabla U + \nabla U^T])\\ \nabla\cdot U = 0
-\end{aligned}\label{eq:NS} \end{equation} where $\nu$ is the kinematic viscosity
-and $\nu_T$ is the turbulent eddy viscosity which approximates the turbulent
-fluctuations.
+RANS equations for the mean velocity $\vect{u}$ and pressure $p$ 
+\begin{equation}
+\begin{aligned} 
+\frac{\partial \vect{u}}{\partial t}+\vect{u}\cdot\nabla \vect{u} = -\nabla p +
+\nabla\cdot((\nu+\nu_T)[\nabla \vect{u} + \nabla \vect{u}^T])\\ 
+\nabla\cdot \vect{u} = 0
+\end{aligned}\label{eq:NS} \end{equation} 
+where $\nu$ is the kinematic viscosity and $\nu_T$ is the turbulent eddy viscosity which approximates the turbulent fluctuations.
 
 We compared two eddy viscosity models, the Baldwin-Lomax model and the
 $k-\varepsilon$ model.  In the Baldwin-Lomax \cite{Bldwin78} algebraic model,
@@ -492,13 +447,6 @@ list.  Our algorithm can efficiently and robustly handle the fabric-fabric and
 fabric-rigid body collision. We are still in the process of implementing and
 testing the fabric-string and string-string collision.  \Fig{fig:collision}
 shows the numerical results of fabric-rigid body collision.
-
-\begin{figure}[!ht] \centering \begin{tabular}{ccc}
-\epsfig{file=Figures/collision-0,width=0.33\hsize} &
-\epsfig{file=Figures/collision-1,width=0.33\hsize} &
-\epsfig{file=Figures/collision-2,width=0.33\hsize} \end{tabular}
-\caption{Numerical simulation of fabric-rigid (human) body collision handling.
-\label{fig:collision}} \end{figure}
 
 \subsection{Inclusion of parachutists} 
 The dimensions of parachutist or cargo are usually smaller than the parachute
