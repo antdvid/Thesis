@@ -5,6 +5,7 @@
 \usepackage{amssymb}            % to see postscript files
 \usepackage{doublespace}
 
+%\usepackage{epstopdf}
 \usepackage[dvips]{epsfig}
 \usepackage{multirow}
 \usepackage{subfigure}
@@ -63,16 +64,17 @@
 \pagenumbering{arabic}
 
 \begin{spacing}{\defaultspace}  % adjust spacing
-\include{introduction}
-\include{parachute}
-\include{entrainment}
-\include{conclusion}
+\include{Background}
+\include{Numerical}
+\include{Application}
+\include{Results}
+\include{Conclusion}
 \end{spacing}
 
 \begin{spacing}{\singlespace}
 \bibliographystyle{plain}       % plain or ieeetr
 
-\bibliography{refs}
+%\bibliography{refs}
 \end{spacing}
 
 \end{document}

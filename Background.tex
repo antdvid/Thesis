@@ -1,0 +1,100 @@
+\chapter{Background}
+\section{Navier-Stokes equation and turbulent flow}
+It is common to view turbulent flows in both our daily life, such as smoke from a chimney, water in a river, and engineering fields, such as flows around airplanes, or mixing of fuel and air in engines. In these observations, the flow is unsteady, irregular and chaotic. The motion of every eddy or droplet is unpredictable \cite{PopeTurbulent2000}. In another word, the velocity of turbulent flows varies irregularly in both position and time. The velocity field is denoted in mathematics by $\mathbf{U}(\mathbf{x},t)$, where $\mathbf{x}$ is the position and $t$ is time. Another important feature of turbulence is its ability to transport and mix fluid much more effectively than a comparable laminar flow. The intensity of turbulent flow is often characterized by a single non-dimensional parameter, Reynolds number\cite{Reynolds1894}: 
+\begin{equation}
+Re = U L / \nu
+\label{ReynoldsNumber}
+\end{equation}
+where $U$ and $L$ are characteristic velocity and length scale of the flow, and $\nu$ is the kinematic viscosity of the fluid. According to Reynolds's experiment, the flow is laminar if $Re$ is less than about $2300$, and becomes turbulent if $Re$ exceeds $4000$.
+
+A classic way to study fluid dynamics is to treat 
+the fluids as continuous media, based on the continuum hypothesis, 
+which reconciles the discrete molecular nature of fluids with the 
+continuum view. Since the length and time scales of the molecular 
+motion are extremely small compared with human scales, the fluid's velocity $\mathbf{U}(\mathbf{x}, t)$ is defined as the average velocity of the molecules within a spherical region of 
+volume $V$ centered on the point $\mathbf{x}$. According to the conservation law of mass and momentum, the flow of constant property Newtonian fluids is determined by the 
+following partial differential equations (PDE):
+\begin{equation}
+\frac{\partial\rho}{\partial t} + \nabla\cdot(\rho\mathbf{U}) = 0
+\label{mass_eqn}
+\end{equation} 
+
+\begin{equation}
+\frac{\partial\mathbf{U}}{\partial t} 
++ \mathbf{U}\cdot\nabla\mathbf{U} 
+= -\frac{1}{\rho}\nabla p + \nu\nabla^2\mathbf{U}
+\label{mom_eqn}
+\end{equation}
+where $\nu$ is the kinematic viscosity and $p$ is the pressure field. The above equations are usually called the Navier-Stokes equation. In this paper, we only consider constant-density flows, and therefore \Eq{mass_eqn} degenerates to the divergence-free condition:
+\begin{equation}
+\nabla\cdot\mathbf{U} = 0
+\label{div_free}
+\end{equation}
+
+The boundary conditions are essential for solving the above equations. At a stationary solid wall with unit normal $\mathbf{n}$, 
+the boundary conditions are the impermeability condition
+\begin{equation}
+\mathbf{n}\cdot\mathbf{U} = 0
+\label{imperm_cond}
+\end{equation}
+and the no-slip condition
+\begin{equation}
+\mathbf{U}-\mathbf{n}(\mathbf{n}\cdot\mathbf{U}) = 0
+\label{noslip_cond}
+\end{equation}
+which together yield
+\begin{equation}
+\mathbf{U} = 0
+\label{stat_cond}
+\end{equation}
+
+It is sometimes reasonable to assume the hypothetical case of an infinite domain, which is defined to have the periodic boundary condition. This condition is useful for approximating a large system by using a small unit cell.
+
+It is true that the fluid motion of laminar and turbulent flows can be determined by the Navier-Stokes equation. It seems that if one can solve the \Eq{mom_eq} and \Eq{div_free}, either analytically or numerically, then the behavior of the fluid flow can be predicted. However, solving the Navier-Stokes equations remains an immensely challenging problem. Firstly, until now no one has ever been able to prove that smooth solution always exist, or that if they do exist, they have bounded energy per unit mass. This in called the Navier-Stokes existence and smoothness problem and has not been solved yet. On the other hand, although many well-understood numerical methods have existed for a long time and can be used to solve the PDEs like \Eq{mom_eq} and \Eq{div_free}, massive computing resources are needed to resolve all scales from energy containing scale to inertial sub-range, and down to the scale of viscous dissipation. Failing to resolve the complete range of the length scales may result in unphysical numerical results. To obtain solutions for moderately high Reynolds numbers using the brutal-force approach, Directed Numerical Simulation (DNS), requires weeks of computing time on today's largest supercomputers. 
+
+An alternative approach introduced by Osborne Reynolds in the late 19th century is to ignore the details of the turbulent flow at each instant and, instead, to regard the flow as a superposition of mean and fluctuating parts. According to the Reynolds decomposition, the velocity $\mathbf{U}(\mathbf{x}, t)$ is decomposed into its mean $\langle\mathbf{U}(\mathbf{x},t)\rangle$ and the fluctuation $\mathbf{u}(\mathbf{x},t)$:
+\begin{equation}
+\mathbf{U}(\mathbf{x},t) = \langle\mathbf{U}(\mathbf{x},t)\rangle + \mathbf{u}(\mathbf{x},t)
+\label{reynolds_decomp}
+\end{equation}
+Taking the mean of the divergence-free condition \Eq{div_free} and momentum equation \Eq{mon_eqn} yields the Reynolds Averaged Navier-Stokes(RANS) equations:
+\begin{equation}
+\nabla\cdot\langle\mathbf{U}\rangle = 0
+\label{div_free_U}
+\end{equation}
+\begin{equation}
+\frac{\partial \langle U_j\rangle}{\partial t} + \langle \mathbf{U}\rangle
+\cdot \nabla\langle U_j\rangle = 
+- \frac{1}{\rho}\frac{\partial \langle p\rangle}{\partial x_j} + \nu\nabla^2\langle U_j\rangle - \frac{\partial\langle u_iu_j\rangle}{\partial x_i}
+\label{reynolds_eqn}
+\end{equation}
+It is obvious that the Reynolds equations \Eq{reynolds_eqn} resembles the Navier-Stokes equation \Eq{mom_eqn} except the term of Reynolds stresses $\frac{\partial\langle u_iu_j\rangle}{\partial x_i}$, which plays a crucial role to distinguish the behaviors of $\mathbf{U}(\mathbf{x},t)$ and $\langle\mathbf{U}(\mathbf{x},t)\rangle$. The equation \Eq{reynolds_eqn} is incomplete since the Reynolds stresses appear as unknowns and are need to be determined by a turbulence model. The turbulent-viscosity models are based on the turbulent-viscosity hypothesis: 
+\begin{equation}
+\langle u_iu_j\rangle = \frac{2}{3}k\delta_{ij} 
+- \nu_T(\frac{\partial\langle U_i\rangle}{\partial x_j} + 
+\frac{\partial\langle U_j\rangle}{\partial x_i})
+\label{visc_hypo}
+\end{equation}   
+where $k = 1/2\langle u_iu_i\rangle}$ is the turbulent kinetic energy, $\delta_{ij}$ equals one when $i = j$ and zero otherwise. Given the turbulent eddy viscosity $\nu_T$, \Eq{visc_hypo} provides a convenient closure to the Reynolds equations. Although the accuracy of this hypothesis is poor for many flows \cite{PopeTurbulence2000}, this approach is widely accepted as an adequate approximation and has been applied to many studies involving turbulent flows. The turbulent viscosity $\nu_T(\mathbf{x},t)$ can be determined in many ways through defining different turbulence models, such as algebraic models, one-equation models and two-equation models \cite{WilcoxTurbulence2006}. In consideration of accuracy and efficiency, the RANS model is used only if the Reynolds number is extremely large and hence the computational cost can not be handled by the current computational resources. In this paper, DNS is used to study the homogeneous turbulence flow in a very small domain while RANS is adopted to study the problem with a much larger scale.   
+
+\section{Convection-diffusion-reaction equation}
+A scalar field, such as temperature, water vapor or the concentration of a chemical species, is often accompanied with the turbulent velocity $\mathbf{U}(\mathbf{x},t)$ in a real physics problem. In addition, the turbulence kinetic energy $k$ and energy dissipation rate $\varepsilon$, which are related to the turbulent viscosity, can also be regarded as scalar fields. In a constant-property flow, the transport equation for the scalar field $\Phi$ is:
+\begin{equation}
+\frac{\partial\Phi}{\partial t} + \mathbf{U}\cdot\nabla\Phi = D\nabla^2Phi + \mathbf{f}(\mathbf{x},t)
+\label{scal_eqn}
+\end{equation}
+where $D$ is the diffusivity and $\mathbf{f}(\mathbf{x},t)$ is the source or sink term. The scalar field may not be passive since its value can take effects on the fluid flow. \Eq{scal_eqn} is much simpler than the Navier-Stokes equation, but has many applications.
+In the rest of this section, we list all the convection-diffusion-reaction equation encountered in this paper.
+In the study of cloud microphysics, we have the transport equation of water vapor and temperature as below:
+\begin{equation}
+\partial_{t}T+(\mathbf{u}\cdot\nabla)T=\frac{L_{h}}{c_{p}}C_{d}+\mu_{T}\nabla^{2}T\label{eq:Temp}
+\end{equation}
+
+\begin{equation}
+\partial_{t}q_{v}+(\mathbf{u}\cdot\nabla)q_{v}=-C_{d}+\mu_{v}\nabla^{2}q_{v}\label{eq:Vapor}
+\end{equation}
+where $T$ is the temperature field and $q_v$ is the water vapor field; $L_{h}$ is the latent heat of water vapor condensation,
+$c_{p}$ is the specific heat at constant pressure, $\mu_{T}=\mu_{v}$ are the molecular diffusivity for temperature and water vapor, respectively and assumes to be equal. The condensation rate $C_{d}$ denotes the rate of exchange between liquid and vapor.
+
+The exact meaning of these equations will be explained in the later chapters.
+\section{Particle System}
