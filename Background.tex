@@ -50,14 +50,14 @@ which together yield
 
 It is sometimes reasonable to assume the hypothetical case of an infinite domain, which is defined to have the periodic boundary condition. This condition is useful for approximating a large system by using a small unit cell.
 
-It is true that the fluid motion of laminar and turbulent flows can be determined by the Navier-Stokes equation. It seems that if one can solve the \Eq{mom_eq} and \Eq{div_free}, either analytically or numerically, then the behavior of the fluid flow can be predicted. However, solving the Navier-Stokes equations remains an immensely challenging problem. Firstly, until now no one has ever been able to prove that smooth solution always exist, or that if they do exist, they have bounded energy per unit mass. This in called the Navier-Stokes existence and smoothness problem and has not been solved yet. On the other hand, although many well-understood numerical methods have existed for a long time and can be used to solve the PDEs like \Eq{mom_eq} and \Eq{div_free}, massive computing resources are needed to resolve all scales from energy containing scale to inertial sub-range, and down to the scale of viscous dissipation. Failing to resolve the complete range of the length scales may result in unphysical numerical results. To obtain solutions for moderately high Reynolds numbers using the brutal-force approach, Directed Numerical Simulation (DNS), requires weeks of computing time on today's largest supercomputers. 
+It is true that the fluid motion of laminar and turbulent flows can be determined by the Navier-Stokes equation. It appears that if one can solve the \Eq{mom_eqn} and \Eq{div_free}, either analytically or numerically, then the behavior of the fluid flow can be predicted. However, solving the Navier-Stokes equations remains an immensely challenging problem. Firstly, until now no one has ever been able to prove that smooth solution always exist, or that if they do exist, they have bounded energy per unit mass. This in called the Navier-Stokes existence and smoothness problem and has not been solved yet. On the other hand, although many well-understood numerical methods have existed for a long time and can be used to solve the PDEs like \Eq{mom_eqn} and \Eq{div_free}, massive computing resources are always needed to resolve all scales from energy containing scale to inertial sub-range, and down to the scale of viscous dissipation \cite{PopeTurbulence2000}. Failing to resolve the complete range of the length scales may result in unphysical numerical results. To obtain solutions for moderately high Reynolds numbers using the brutal-force approach, Directed Numerical Simulation (DNS), requires weeks of computing time on today's largest supercomputers. 
 
 An alternative approach introduced by Osborne Reynolds in the late 19th century is to ignore the details of the turbulent flow at each instant and, instead, to regard the flow as a superposition of mean and fluctuating parts. According to the Reynolds decomposition, the velocity $\mathbf{U}(\mathbf{x}, t)$ is decomposed into its mean $\langle\mathbf{U}(\mathbf{x},t)\rangle$ and the fluctuation $\mathbf{u}(\mathbf{x},t)$:
 \begin{equation}
 \mathbf{U}(\mathbf{x},t) = \langle\mathbf{U}(\mathbf{x},t)\rangle + \mathbf{u}(\mathbf{x},t)
 \label{reynolds_decomp}
 \end{equation}
-Taking the mean of the divergence-free condition \Eq{div_free} and momentum equation \Eq{mon_eqn} yields the Reynolds Averaged Navier-Stokes(RANS) equations:
+Taking the mean of the divergence-free condition \Eq{div_free} and momentum equation \Eq{mom_eqn} yields the Reynolds Averaged Navier-Stokes(RANS) equations:
 \begin{equation}
 \nabla\cdot\langle\mathbf{U}\rangle = 0
 \label{div_free_U}
@@ -75,26 +75,49 @@ It is obvious that the Reynolds equations \Eq{reynolds_eqn} resembles the Navier
 \frac{\partial\langle U_j\rangle}{\partial x_i})
 \label{visc_hypo}
 \end{equation}   
-where $k = 1/2\langle u_iu_i\rangle}$ is the turbulent kinetic energy, $\delta_{ij}$ equals one when $i = j$ and zero otherwise. Given the turbulent eddy viscosity $\nu_T$, \Eq{visc_hypo} provides a convenient closure to the Reynolds equations. Although the accuracy of this hypothesis is poor for many flows \cite{PopeTurbulence2000}, this approach is widely accepted as an adequate approximation and has been applied to many studies involving turbulent flows. The turbulent viscosity $\nu_T(\mathbf{x},t)$ can be determined in many ways through defining different turbulence models, such as algebraic models, one-equation models and two-equation models \cite{WilcoxTurbulence2006}. In consideration of accuracy and efficiency, the RANS model is used only if the Reynolds number is extremely large and hence the computational cost can not be handled by the current computational resources. In this paper, DNS is used to study the homogeneous turbulence flow in a very small domain while RANS is adopted to study the problem with a much larger scale.   
+where $k = 1/2\langle u_iu_i\rangle$ is the turbulent kinetic energy, $\delta_{ij}$ equals one when $i = j$ and zero otherwise. Given the turbulent eddy viscosity $\nu_T$, \Eq{visc_hypo} provides a convenient closure to the Reynolds equations. Although the accuracy of this hypothesis is poor for many flows \cite{PopeTurbulence2000}, this approach is widely accepted as an adequate approximation and has been applied to many studies involving turbulent flows. The turbulent viscosity $\nu_T(\mathbf{x},t)$ can be determined in many ways through defining different turbulence models, such as algebraic models, one-equation models and two-equation models \cite{WilcoxTurbulence2006}. In consideration of accuracy and efficiency, the RANS model is used only if the Reynolds number is extremely large and hence the computational cost can not be handled by the current computational resources. In this paper, DNS is used to study the homogeneous turbulence flow in a very small domain while RANS is adopted to study the problem with a much larger scale.   
 
 \section{Convection-diffusion-reaction equation}
-A scalar field, such as temperature, water vapor or the concentration of a chemical species, is often accompanied with the turbulent velocity $\mathbf{U}(\mathbf{x},t)$ in a real physics problem. In addition, the turbulence kinetic energy $k$ and energy dissipation rate $\varepsilon$, which are related to the turbulent viscosity, can also be regarded as scalar fields. In a constant-property flow, the transport equation for the scalar field $\Phi$ is:
+A scalar field, such as temperature, water vapor or the concentration of a chemical species, is often accompanied with the turbulent velocity $\mathbf{U}(\mathbf{x},t)$ in a real physics problem. In addition, the turbulence kinetic energy $k$ and energy dissipation rate $\varepsilon$, which are related to the turbulent viscosity, can also be regarded as scalar fields. In a constant-property flow, the transport equation for a scalar field $\Phi$ is:
 \begin{equation}
-\frac{\partial\Phi}{\partial t} + \mathbf{U}\cdot\nabla\Phi = D\nabla^2Phi + \mathbf{f}(\mathbf{x},t)
+\frac{\partial\Phi}{\partial t} + \mathbf{U}\cdot\nabla\Phi = D\nabla^2\Phi + \mathbf{f}(\mathbf{x},t)
 \label{scal_eqn}
 \end{equation}
 where $D$ is the diffusivity and $\mathbf{f}(\mathbf{x},t)$ is the source or sink term. The scalar field may not be passive since its value can take effects on the fluid flow. \Eq{scal_eqn} is much simpler than the Navier-Stokes equation, but has many applications.
-In the rest of this section, we list all the convection-diffusion-reaction equation encountered in this paper.
-In the study of cloud microphysics, we have the transport equation of water vapor and temperature as below:
+In the rest of this section, we list all the convection-diffusion-reaction equations encountered in this paper and the detailed explanation will be given in the corresponding chapters.
+
+In the study of cloud microphysics, we have the transport equation of water vapor mixing ratio $q_v$ and temperature field $T$ as below:
 \begin{equation}
-\partial_{t}T+(\mathbf{u}\cdot\nabla)T=\frac{L_{h}}{c_{p}}C_{d}+\mu_{T}\nabla^{2}T\label{eq:Temp}
+\partial_{t}T+(\mathbf{u}\cdot\nabla)T=\frac{L_{h}}{c_{p}}C_{d}+\mu_{T}\nabla^{2}T\label{eq:temp_eqn}
 \end{equation}
 
 \begin{equation}
-\partial_{t}q_{v}+(\mathbf{u}\cdot\nabla)q_{v}=-C_{d}+\mu_{v}\nabla^{2}q_{v}\label{eq:Vapor}
+\partial_{t}q_{v}+(\mathbf{u}\cdot\nabla)q_{v}=-C_{d}+\mu_{v}\nabla^{2}q_{v}\label{eq:vap_eqn}
 \end{equation}
-where $T$ is the temperature field and $q_v$ is the water vapor field; $L_{h}$ is the latent heat of water vapor condensation,
-$c_{p}$ is the specific heat at constant pressure, $\mu_{T}=\mu_{v}$ are the molecular diffusivity for temperature and water vapor, respectively and assumes to be equal. The condensation rate $C_{d}$ denotes the rate of exchange between liquid and vapor.
+where $L_{h}$ is the latent heat of water vapor condensation, $c_{p}$ is the specific heat at constant pressure, $\mu_{T}=\mu_{v}$ are the molecular diffusivity for temperature and water vapor, respectively and assumes to be equal. The condensation rate $C_{d}$ denotes the rate of exchange between liquid water and vapor water, and hence can be treated as a source term to the temperature field and sink term to the water vapor field. These equations describe the water and energy exchange during the phase transition process between liquid and vapor. Heat energy absorbed by liquid water during evaporation loosens chemical bonds between water molecules, so the molecules break free and become gaseous water vapor, while the condensation proceeds in the opposite way. The detailed explanation of these equations will be given in the later chapters for corresponding topics.
 
-The exact meaning of these equations will be explained in the later chapters.
-\section{Particle System}
+To compute the turbulent viscosity $\nu_T$, the most widely used complete turbulence model is the $k-\varepsilon$ model proposed by Jones and Launder\cite{}. The $k-\varepsilon$ model consists of two transport equations for $k$ and $\varepsilon$:
+\begin{equation} 
+\frac{\partial k}{\partial t}
++\nabla\cdot(k\mathbf{U}
+-(\nu+\frac{\nu_T}{\delta_k})\nabla k) 
+= P_k - \varepsilon
+\label{eq:k_eqn} 
+\end{equation}
+
+\begin{equation} 
+\frac{\partial
+\varepsilon}{\partial t}+\nabla\cdot(\varepsilon \mathbf{U}
+-(\nu+\frac{\nu_T}{\delta_\varepsilon})\nabla \varepsilon)
+=\frac{\varepsilon}{k}(C_1P_k-C_2\varepsilon) \label{eq:eps_eqn} \end{equation}
+where $P_k = \frac{\nu_T}{2}|\nabla \mathbf{U} + \nabla \mathbf{U}^T|^2$ is the production of turbulent kinetic energy. In summary, the equations given above are all specific examples of convection-diffusion-reaction equations, and can be solved using similar numerical scheme in a unified numerical framework. Again, the detailed explanation and improvements to these equations will be found in the later chapters.
+
+\section{Particle System dynamics}
+Particles are objects that have mass, position, and velocity, and respond to forces, but that have no spatial extent. Due to its simple structure, particles are by far the easiest objects to simulate. In spite of simplicity, particles have a wide range of applications. For example, an elastic membrane can be built by connecting particles with simple damped springs; a group of cloud droplets in their early life can be simulated with millions of particles. The motion of a Newtonian particle is governed by the familiar first order ordinary differential equations for position $\vect{x}$ and velocity $\vect{v}$:
+\begin{equation}
+\dot{\vect{v}} = \vect{f}/m
+\end{equation}
+\begin{equation}
+\dot{\vect{x}} = \vect{v}
+\end{equation}
+The position $\vect{x}$ and velocity $\vect{v}$ can be concatenated to form a $6$-vector, which is called phase space.
