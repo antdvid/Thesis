@@ -1,4 +1,6 @@
-\chapter{Background}
+\chapter{Background}\label{background}
+Fluid-structure interaction (FSI) problems in general are often too complex to solve analytically and so they have to be analyzed by means of experiments or numerical simulation. Although the maturity of the computational fluid dynamics enable numerical simulation of fluid structure interaction, considering turbulence flow in these problems add more difficulties and challenges. The numerical models for solving FSI problems usually involve solving several equations describing the behaviors fluid and structures. Sometimes the equations of the scalar field, such as temperature or the concentration of chemical species, also need to be considered as a significant component of the system. In this chapter, three different categories of equations for fluid field, scalar field and particle dynamics are introduced in the mathematics point of view.
+
 \section{Navier-Stokes equation and turbulent flow}
 It is common to view turbulent flows in both our daily life, such as smoke from a chimney, water in a river, and engineering fields, such as flows around airplanes, or mixing of fuel and air in engines. In these observations, the flow is unsteady, irregular and chaotic. The motion of every eddy or droplet is unpredictable \cite{PopeTurbulent2000}. In another word, the velocity of turbulent flows varies irregularly in both position and time. The velocity field is denoted in mathematics by $\mathbf{U}(\mathbf{x},t)$, where $\mathbf{x}$ is the position and $t$ is time. Another important feature of turbulence is its ability to transport and mix fluid much more effectively than a comparable laminar flow. The intensity of turbulent flow is often characterized by a single non-dimensional parameter, Reynolds number\cite{Reynolds1894}: 
 \begin{equation}
@@ -130,19 +132,43 @@ First, let's look at a simple example of independent particle system, which desc
 \end{equation}
 
 \begin{equation}
-\dot{\vect{v}}=\frac{1}{\tau_{p}}[\vect{u}-\vect{v}]+\vect{g}\label{droplet_v_eqn}
+\dot{\vect{v}}=\frac{1}{\tau_{p}}[\vect{U}-\vect{v}]+\vect{g}\label{droplet_v_eqn}
 \end{equation}
-Here $\vect{x}$ is the position coordinate;
-$\vect{v}$ is the droplet velocity; $\vect{u}$ is the velocity of fluid field, 
-$\vect{g}$ is the gravitational acceleration; $\tau_{p}=2\rho_{l}R^{2}/(9\rho_{0}\nu)$ is the finite particle response time. The particle response time measures the droplet inertial
-effects; when $\tau_{p}$ is set to be zero, \Eq{droplet_v_eqn}
-becomes $\mathbf{v}=\mathbf{u}$, which implies that the
-droplets will exactly follows the turbulent flows. The last term in equation
-(\ref{eq:Velocity}) is the sedimentation term that accounts for the effect of
-gravity on droplets motion. Equation (\ref{eq:Velocity}) is appropriate if the
+Here $\vect{x}$ is the droplet position coordinate; 
+$\vect{v}$ is the droplet velocity; $\vect{U}$ is the velocity of fluid field;
+$\vect{g}$ is the gravitational acceleration; $\tau_{p}=2\rho_{l}R^{2}/(9\rho_{0}\nu)$ is the finite particle response time, which measures the droplet inertial
+effects. In the extreme case when $\tau_{p}$ is set to be zero, \Eq{droplet_v_eqn}
+becomes $\vect{v}=\vect{U}$, which implies that the
+droplets will exactly follow the turbulent flows. The last term in \Eq{droplet_v_eqn} is called the sedimentation term that accounts for the effect of
+gravity on droplets motion. \Eq{droplet_v_eqn} is appropriate if the
 Reynolds number based on the relative velocity between the particle and fluid
 is significantly less than one \cite{Eaton94}. The particle diameter is also
 assumed to be smaller than the Kolmogorov microscale $\eta$, the smallest
 length scales of the turbulent flow field. During condensation, direct
 interactions between droplets are negligible because their sizes are too small
-comparing with the average distance between two droplets.
+comparing with the average distance between two droplets. The Lagrangian trajectory of a particle in the turbulent flow is displayed in \Fig{lag_traj}.
+\begin{figure}
+\centering
+\includegraphics[width=0.5\textwidth]{Figures/Lagrangian_trajectory.png}
+\label{lag_traj}
+\end{figure}
+
+Another example illustrating the connected particle system is the spring mass model, which can effectively simulate the behavior of elastic material, such as cloth\cite{}, soft body\cite{}, and skin\cite{} etc. The spring mesh used in the simulation of parachute is displayed in \Fig{fig:goremesh}. 
+\begin{figure}
+\centering
+\includegraphics[width=0.5\textwidth]{Figures/goremesh} 
+\caption{The spring model on a triangulated mesh.} 
+\label{fig:goremesh}
+\end{figure}
+In mathematics, the velocity $\vect{v}$ and position $\vect{x}$ of $n$ particles are determined by:
+\begin{equation}
+\dot{\vect{x}} = \vect{v}
+\label{spring_x_eqn}
+\end{equation}
+\begin{equation}
+\dot{\vect{v}} = \vect{f}_i
+				+ \vect{f}_d + \vect{f}_e \label{spring_v_eqn}
+\end{equation}
+where $\vect{f}_i = \vect{M}^{-1}(-\frac{\partial W}{\partial \vect{x}})$ is the internal force restoring the surface deformation and $W$ is a scalar function of $\vect{x}$ describing the cloth internal energy; diagonal matrix $\vect{M} \in \mathbb{R}^{3n\times 3n}$ represents the mass distribution of the cloth; $\vect{f}_d$ is the damping function that will be discussed later; $\vect{f}_e$ is the external force (such as air-drag, gravity, contact constrains, etc.) acting on the cloth. This model is well defined except the energy function $W$ for each mass point. In fact, the elastic membrane can be discretized into triangles and then the potential energy in a deformed triangle consists of two parts: the energy of three tensile springs that prevent edges from stretching; the energy of three angular springs that prevent any change of vertex angles. Intuitively, the formula of $W$ for the $i$-th particle should include all the particles connecting to it. The specific form of $W$ will be introduced in \ref{application}.
+
+In the next chapter, the numerical methods for solving Navier-Stokes equation, convection-diffusion-reaction equation and particle system are introduced. In fact, these equations can be solved using various numerical methods, which have their own advantages and disadvantages comparing with each other. These will be discussed in details in the next chapter.

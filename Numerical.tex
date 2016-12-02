@@ -1,6 +1,8 @@
 \chapter{Numerical Method}
-\section{Projection method for Navier-Stokes equation}
+The success of the computational fluid dynamics highly depends on the underlying numerical method. Until now, various numerical method has been proposed to solve the partial differential equation and ordinary differential equation. However, instead of applying a general approach, some special techniques are usually required in a specific problem. In this chapter, the numerical method for Navier-Stokes equation, advection-diffusion-reaction equation and ordinary differential equation are introduced. In the meanwhile, their the criteria of their convergence and stability are also discussed.
 
+\section{Projection method for incompressible Navier-Stokes equation}
+A major difficulty for the numerical simulation of incompressible flows is that the velocity and the pressure are coupled by the incompressibility constraint. In 1960s, Chorin and Temam proposed the fraction-step method in their ground breaking work \cite{} to overcome the difficulty in time-dependent viscous incompressible flow. In projection method, the velocity and pressure are decoupled at each time step, and consequently only a sequence of decoupled elliptic equation are needed to solve. This makes the projection method very efficient for large scale numerical simulation.
 \section{Numerical method for advection-diffusion-reaction equation}
 
 \section{Numerical Method for particle system}
