@@ -2,7 +2,79 @@
 The success of the computational fluid dynamics highly depends on the underlying numerical method. Until now, various numerical method has been proposed to solve the partial differential equation and ordinary differential equation. However, instead of applying a general approach, some special techniques are usually required in a specific problem. In this chapter, the numerical method for Navier-Stokes equation, advection-diffusion-reaction equation and ordinary differential equation are introduced. In the meanwhile, their the criteria of their convergence and stability are also discussed.
 
 \section{Projection method for incompressible Navier-Stokes equation}
-A major difficulty for the numerical simulation of incompressible flows is that the velocity and the pressure are coupled by the incompressibility constraint. In 1960s, Chorin and Temam proposed the fraction-step method in their ground breaking work \cite{} to overcome the difficulty in time-dependent viscous incompressible flow. In projection method, the velocity and pressure are decoupled at each time step, and consequently only a sequence of decoupled elliptic equation are needed to solve. This makes the projection method very efficient for large scale numerical simulation.
+A major difficulty for the numerical simulation of incompressible flows is that the velocity and the pressure are coupled by the incompressibility constraint \cite{Guermond2005Overview}. In 1960s, Chorin and Temam proposed the fraction-step method in their ground breaking work \cite{} to overcome the difficulty in time-dependent viscous incompressible flow. In their method, the velocity and pressure are decoupled at each time step, and consequently only a sequence of decoupled elliptic equation are needed to solve. This makes the projection method very efficient for large scale numerical simulation.
+
+We consider an incompressible fluid in a $d = 2, 3$-dimensional bounded domain $\Omega \subset \Re^d$ during the time interval $(0, T)$. Let $\Delta t_i > 0$ be the $i$-th time step size and use notation $\vect{w}^n$ to represent an approximation to $\vect{w}(t^n)$, where $t^n = \sum_{i = 1}^{n}\Delta t_i$. Following the numerical schemes proposed in \cite{}, we have the second-order, time-discrete semi-implicit forms of \Eq{mom_eqn} and \Eq{div_free}:
+\begin{equation}
+\frac{\vect{u}^{n+1} - \vect{u}^n}{\Delta t} + \nabla p^{n+1/2} = 
+-[(\vect{u}\cdot\nabla)\vect{u}]^{n+1/2} + \frac{\nu}{2}\nabla^2(\vect{u}^{n+1} + \vect{u}^n)
+\label{dis_mom_eqn}
+\end{equation}
+\begin{equation}
+\nabla\cdot\vect{u}^{n+1} = 0
+\label{dis_div_free}
+\end{equation}
+with boundary condition
+\begin{equation}
+B(\vect{u}^{n+1}) = 0
+\label{ns_bc}
+\end{equation}
+where $[(\vect{u}\cdot\nabla)\vect{u}]^{n+1/2}$ represents the convective derivative term at time level $t^{n+1/2}$, and can be computed explicitly\cite{KimMoin85}; $B(\cdot)$ is the boundary condition of $u$. It is clear that \Eq{dis_mom_eqn} and \Eq{dis_div_free} are coupled together due to the appearance of $p$, and hence difficult to solve directly. A fractional step procedure can be used to firstly solve \Eq{dis_mom_eqn} while ignoring the pressure gradient term (pressure-free projection method), and then projecting the solution onto the space of divergence-free fields to obtain $\vect{u}^{n+1}$. The pressure-Poisson version of projection method consists of the following steps:
+
+Step 1: Compute the tentative velocity
+\begin{eqnarray}
+\frac{\vect{u}^*-\vect{u}^n}{\Delta t}+
+[(\vect{u}\cdot\nabla_h)\vect{u}]^{n+1/2}
+=\nu\Delta_h(\mathbf{u}^*+\mathbf{u}^n)\\ 
+B(\mathbf{u}^*) = 0,
+\label{tent_vel}
+\end{eqnarray} 
+
+Step 2: Projection step
+\begin{equation} \frac{1}{\rho}\Delta_h p^{n+1/2} =
+\nabla_h\cdot \mathbf{u}^*/\Delta t 
+\label{proj} 
+\end{equation}
+
+Step 3: Update new velocity
+\begin{equation} \mathbf{u}^{n+1} = \mathbf{u}^* -
+\frac{\Delta t}{\rho}\nabla_h p^{n+1/2} \label{newvel} \end{equation}
+
+A convenient choice to discretize $\vect{u}$ and $p$ in space is to use finite difference method on regular computational grid. Let $\mathbf{u}^n_{ijk}$ represent the
+numerical solution of velocity field at grid node  $\mathbf{x}_{i,j,k} =
+[L_x+(i+0.5)\Delta x,L_y+(j+0.5)\Delta y, L_z+(k+0.5)\Delta z]$ at time $t^n$ 
+and an analogous definition holds for the pressure $p^n_{ijk}$ ($i =
+0,1,2,...,N_x-1$, $j = 0,1,2,...,N_y-1$, $k = 0,1,2,...,N_z-1$). The vector operators are discretized using central difference scheme:
+\begin{equation} 
+\nabla_h\cdot \vect{u} =
+\frac{u_{i+1,j,k}-u_{i-1,j,k}}{2\Delta x} +
+\frac{v_{i,j+1,k}-v_{i,j-1,k}}{2\Delta y} +
+\frac{w_{i,j,k+1}-w_{i,j,k-1}}{2\Delta z}
+\label{divU} 
+\end{equation}
+
+\begin{equation}
+\label{gradP} \nabla_h p =
+[\frac{p_{i+1,j,k}-p_{i-1,j,k}}{2\Delta x},
+\frac{p_{i,j+1,k}-p_{i,j-1,k}}{2\Delta y},
+\frac{p_{i,j,k+1}-p_{i,j,k-1}}{2\Delta z}]\\    
+\end{equation}
+
+\begin{multline}
+\label{lapP} 
+\Delta_h p = \frac{p_{i+1,j,k}+p_{i-1,j,k}-2p_{i,j,k}}{\Delta x^2} +
+\frac{p_{i,j+1,k}+p_{i,j-1,k}-2p_{i,j,k}}{\Delta y^2} \\
+ \quad +\frac{p_{i,j,k+1}+p_{i,j,k-1}-2p_{i,j,k}}{\Delta z^2} 
+\end{multline}
+
+This method is appealing since it is second order in both time and space. It also prohibits errors in the pressure gradient, which could accumulate in time \cite{}. In \Eq{dis_mom_eqn}, the nonlinear term $adv(\vect{u}) = [(\vect{u}\cdot\nabla)\vect{u}]^{n+1/2}$ at half time step is approximated by extrapolation of the results at previous steps, that is $adv^{n+1/2} = (1+\Delta t_n/(2\Delta t_{n-1}))adv^{n} -\Delta t_n/(2\Delta t_{n-1})adv^{n-1}$. Since this hyperbolic term is explicitly applied to the equation \ref{dis_mom_eqn}, a total variation diminishing (TVD) scheme is always desirable. Ignoring the notation of time, the first order upwind scheme for $\text{adv}(u_i)$ can be written as:
+\begin{equation}
+\text{adv}(u_i) = u_i^+ u_x^- + u_i^- u_x^+ 
+	  + v_i^+ u_y^- + v_i^- u_y^+
+	  + w_i^+ u_z^- + w_i^- u_z^+
+\label{upwind_adv}
+\end{equation}
+where $u_i^+ = \max{u_i, 0}$ and $u_i^- = \min{u_i, 0}$; $u_x^+ = (u_{i+1}-u_{i})/\Delta x$ and $u_x^- = (u_i - u_{i-1})/\Delta x$.
 \section{Numerical method for advection-diffusion-reaction equation}
 
 \section{Numerical Method for particle system}
