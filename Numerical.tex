@@ -1,5 +1,5 @@
 \chapter{Numerical Method}
-The success of the computational fluid dynamics highly depends on the underlying numerical method. Until now, various numerical method has been proposed to solve the partial differential equation and ordinary differential equation. However, instead of applying a general approach, some special techniques are usually required in a specific problem. In this chapter, the numerical method for Navier-Stokes equation, advection-diffusion-reaction equation and ordinary differential equation are introduced. In the meanwhile, their the criteria of their convergence and stability are also discussed.
+The success of the computational fluid dynamics highly depends on the underlying numerical method. Until now, various numerical method has been proposed to solve the partial differential equation and ordinary differential equation. However, instead of applying a general approach, some special techniques are usually required in a specific problem. In this chapter, the numerical method for Navier-Stokes equation, advection-diffusion-reaction equation and ordinary differential equation are introduced. In the meanwhile, the criteria of their convergence and stability are also discussed.
 
 \section{Projection method for incompressible Navier-Stokes equation}
 A major difficulty for the numerical simulation of incompressible flows is that the velocity and the pressure are coupled by the incompressibility constraint \cite{Guermond2005Overview}. In 1960s, Chorin and Temam proposed the fraction-step method in their ground breaking work \cite{} to overcome the difficulty in time-dependent viscous incompressible flow. In their method, the velocity and pressure are decoupled at each time step, and consequently only a sequence of decoupled elliptic equation are needed to solve. This makes the projection method very efficient for large scale numerical simulation.
@@ -74,7 +74,154 @@ This method is appealing since it is second order in both time and space. It als
 	  + w_i^+ u_z^- + w_i^- u_z^+
 \label{upwind_adv}
 \end{equation}
-where $u_i^+ = \max{u_i, 0}$ and $u_i^- = \min{u_i, 0}$; $u_x^+ = (u_{i+1}-u_{i})/\Delta x$ and $u_x^- = (u_i - u_{i-1})/\Delta x$.
-\section{Numerical method for advection-diffusion-reaction equation}
+where $u_i^+ = \max(u_i, 0)$ and $u_i^- = \min(u_i, 0)$; $u_x^+ = (u_{i+1}-u_{i})/\Delta x$ and $u_x^- = (u_i - u_{i-1})/\Delta x$.
+A fifth order weighted essential non-oscillatory (WENO) scheme is another popular class of finite difference scheme for numerically approximate solutions of hyperbolic conservation laws due to its high order accuracy in smooth regions and essentially non-oscillatory transition for discontinuities. Its third order version was first introduced in \cite{}, and then extended to arbitrary order accurate in \cite{}. According to the WENO scheme \cite{}, the computation of the hyperbolic term $\text{adv}(u) = uu_x + vu_y + wu_z$ can be generalized to the computation of the derivative of a flux function $f(u)$, which can be either linear $u$ (for the last two terms 
+$vu_y$ and $wu_z$) or nonlinear $u^2/2$ (the first term written as $(u^2/2)_x$).
+For a general flux $f(u)$, its derivative with respect to $x$ can be written as 
+\begin{equation}
+\frac{\partial f(u)}{\partial x_j} = \frac{1}{\Delta x}(f(u(x_{i+1/2})) - f(u(x_{i-1/2})))
+\end{equation}
+The flux $f(u(x_{i+1/2}))$ can be replaced by a monotone numerical flux $\hat{f}(u^-_{i+1/2}, u^+_{i+1/2})$, where $u^-_{i+1/2}$ and $u^+_{i+1/2}$ are reconstructed by fifth-order WENO method:
+\begin{equation}
+u^-_{i+1/2} = \sum_j\omega_jp_j(x_{j+1/2})
+\end{equation}
+where
+\begin{eqnarray}
+p_0(x_{i+1/2}) = \frac{1}{3}u_{i-2} - \frac{7}{6}u_{i-1} + \frac{11}{6}u_{i}\\
+p_1(x_{i+1/2}) = -\frac{1}{6}u_{i-1} + \frac{5}{6}u_i + \frac{1}{3}u_{i+1}\\
+p_2(x_{i+1/2}) = \frac{1}{3}u_i + \frac{5}{6}u_{i+1} - \frac{1}{6}u_{i+2}
+\end{eqnarray}
 
-\section{Numerical Method for particle system}
+\begin{equation}
+\omega_j = \frac{\bar{\omega}_j}{\sum_j\bar{\omega}_j}, \quad
+\bar{\omega}_j = \frac{\gamma_j}{\sum_j(\epsilon + \beta_j)^2}
+\end{equation}
+and
+\begin{eqnarray*}
+\gamma_0 = \frac{1}{10}\\
+\gamma_1 = \frac{6}{10}\\
+\gamma_2 = \frac{3}{10}\\
+\beta_0 = \frac{13}{12}(u_{i-2} - 2 u_{i-1} + u_i)^2 + \frac{1}{4}(3u_{i-2} - 4u_{i-1} + u_i)^2 \\
+\beta_1 = \frac{13}{12}(u_{i-1} - 2u_i + u_{i+1})^2 + \frac{1}{4}(3u_{i-1} - u_{i+1})^2\\
+\beta_2 = \frac{13}{12}(u_i - 2u_{i+1} + u_{i+2})^2 + \frac{1}{4}(u_i - 4u_{i+1} + u_{i+2})^2
+\end{eqnarray*}
+The reconstruction to $u_{i+1/2}^-$ is mirror symmetric with respect to $x_i$ of the above procedure. The WENO scheme has been generalized to various types of schemes, and have been applied to various fields including computational fluid dynamics.
+
+\section{Numerical method for advection-diffusion-reaction equation}
+The convection-diffusion-reaction equation describes the flow of heat, concentration of chemical species where there is both convection, diffusion, and reaction. The numerical scheme used to solve the advection-diffusion-reaction equation is very similar to the numerical method for the Navier-Stokes equation introduced in the last section. Suppose the Crank-Nicolson scheme is still used as the time integration method, then the numerical scheme for solving \Eq{scal_eqn} is:
+\begin{equation}
+\frac{\Phi^{n+1}-\Phi^n}{\Delta t} + [(\vect{U}\cdot\nabla)\Phi]^{n+1/2} = \frac{D}{2}\nabla^2(\Phi^{n+1} + \Phi^n) + f^n
+\label{phi_disc_eqn}
+\end{equation}
+with boundary condition
+\begin{equation}
+B(\Phi^{n+1}) = 0
+\label{phi_bc}
+\end{equation}
+As stated before, the advection term $[(\vect{U}\cdot\nabla)\Phi]^{n+1/2}$ can still be computed explicitly using upwind or WENO scheme introduced in the previous section.  
+The Crank Nicolson scheme is second order accurate in time and space, and it is also unconditionally stable. Due to these features, Crank Nicolson scheme is the preferable method for solving the scalar field.
+
+Different from the pure advection-diffusion equation, the reaction term adds more challenges. In many cases, the physics problem requires the underlying scalar field to be positive. For example, the concentration of a chemical species cannot be negative; the turbulence kinetic energy and dissipation rate should always be larger or equal to zero. However, the existence of sink term in \Eq{scal_eqn} can easily push the solution below zero in one time step. To avoid the loss of positivity of these variables is not an easy task. Simply set a lower bound to these variable does not always work, since this strongly depends on the limitation strategy. Another alternative is to solve for the logarithms of the original variable, but one then deals with modified set of equations involving exponentials of the unknowns. A simple numerical trick is to look at the linearized equation, and then set a lower limitation for the coefficients. The principle of this approach is that one never touches the solution, just the coefficients of the linearized equations. Take \Eq{k_eqn} for turbulence kinetic energy as an example. The existence of $-\varepsilon$ on the right hand side of the equation may result in loss of positivity. Therefore, a possible modification for this equation is:
+\begin{equation}
+\frac{\partial k}{\partial t}
++\nabla\cdot(k\mathbf{U}
+-(\nu+\frac{\nu_T}{\delta_k})\nabla k) 
+= P_k - \gamma_k k
+\label{mdf_k_eqn}
+\end{equation}
+where $\gamma_k = \max(0, \varepsilon/k)$. Now if \Eq{mdf_k_eqn} is solved with implicit method, the solution must keeps its positivity. Similar technique can be easily generalized to other reaction equations.
+
+\section{Numerical Method for Particle System}
+The equations for the particle system are essentially ordinary differential equations (ODEs), and hence most numerical scheme for ODEs can be applied, such as linear multistep methods \cite{}, Runge-Kutta methods \cite{} and boundary value methods \cite{}. However, the difficulties of solving an ODE lies on its stiffness, that is including some terms that can lead to rapid variation in the solution, and these terms may cause numerical unstable for some methods. The behavior of numerical methods on stiff problem can be analyzed by applying these methods to the test equation
+\begin{equation}
+y' = k y
+\label{test_eqn}
+\end{equation}   
+where $y(0) = 1$ and $k \in \mathcal{C}$. Let $h$ denotes the time step and $z = hk$, by induction we have $y_n = (\Phi(z))^ny_0$. The function $\Phi$ is called the stability function and the region of $\{z\in \mathcal{C}| |\Phi(z)| < 1\}$ is called the absolute stability region. The numerical method is A-stable if the region of absolute stability contains the set $\{ z \in \mathcal{C}| \Re(z) < 0\}$. The typical methods for solving ODE: $y' = f(t,y)$ are:
+
+\begin{enumerate}
+\item Runge-Kutta methods are a family of iterative methods used in temporal discretization for the approximation solutions of ODEs. They can be either implicit and explicit. The general Runge-Kutta methods take the form 
+\begin{eqnarray}
+y_{n+1} = y_n + h\sum_{i=1}^sb_ik_i\\
+k_i = f(t_n+c_ih, y_n + h\sum_{j=1}^{s}a_{ij}k_j)
+\end{eqnarray}
+A specific Runge-Kutta method can be determined by putting all the coefficients in the Butcher tableau\cite{}:
+\begin{equation}
+\begin{array}{c|cccc}
+c_1 & a_{11} & a_{12} & \cdots & a_{1s} \\
+c_2 & a_{21} & a_{22} & \cdots & a_{2s} \\
+\vdots & \vdots & \vdots & \ddots & \vdots\\
+c_s & a_{s1} & a_{s2} & \cdots & a_{ss}\\
+\hline
+& b_1 & b_2 & \cdots & b_s\\
+& b_1^* & b_2^* &\cdots & b_s^*
+\end{array}
+\end{equation}
+The coefficients $b_i$ and $b_i^*$ are used to construct two methods, one with
+order $p$ and one with order $p-1$. This produces an estimate of the local truncation 
+error of a single Rung-Kutta step and can be used to control the step size.
+\begin{equation}
+e_{n+1} = h\sum_{i=1}^s(b_i-b_i^*)k_i
+\end{equation}
+The stability function of a Runge-Kutta method is:
+\begin{equation}
+\Phi(z) = \frac{det(I-zA+zeb^T)}{det(I-zA)}
+\label{rk_stab_func}
+\end{equation}
+where $e$ denotes an unity vector.
+The frequently used Runge-Kutta method are listed below using Butcher tableau:
+
+\begin{enumerate}
+\item Classic fourth-order explicit Runge-Kutta method:
+\begin{equation}
+\begin{array}{c|cccc}
+0   & 0   & 0   & 0 & 0\\
+1/3 & 1/3 & 0   & 0 & 0\\
+2/3 & -1/3   & 1 & 0 & 0\\
+1   & 1   & -1   & 1 & 0\\
+\hline
+& 1/8 & 3/8 & 3/8 & 1/8
+\end{array}
+\end{equation}
+Note that this method does not have a step control parameters. It is also not suitable for the solution of stiff equations due to its bounded region of absolute stability. It has been proved that explicit Runge-Kutta methods can never be A-stable.
+
+\item Implicit fourth-order Gauss-Legendre methods based on the points of Gauss-Legendre quadrature:
+\begin{equation}
+\begin{array}{c|cccc}
+1/2-\sqrt{3}/6   & 1/4   & 1/4-\sqrt{3}/6 \\
+1/2+\sqrt{3}/6   & 1/4+\sqrt{3}/6    & 1/4 \\
+\hline
+& 1/2 & 1/2\\
+& 1/2 + 1/2\sqrt{3} & 1/2-1/2\sqrt{3}
+\end{array}
+\end{equation}
+The advantage of implicit Runge-Kutta methods is their greater stability. It has been proved that Gauss-Legendre method with $s$ stage has order $2s$ and is A-stable.
+\end{enumerate}
+
+\item Multistep methods attempt to achieve efficiency be using the information from previous steps. A general linear multistep method takes the following form
+\begin{equation}
+y_{k+1}=\sum_{i=1}^{m}\alpha_{i}y_{k+1-i}+h\sum_{i=0}^{m}\beta_{i}f\left(t_{k+1-i},y_{k+1-i}\right)
+\end{equation}
+where $\left\{ \alpha_{i}\right\} $ and $\left\{ \beta_{i}\right\} $ are determined by polynomial interpolation.
+\begin{enumerate}
+\item The Adams-Bashforth methods are explicit methods. The coefficients $\alpha_1 = 1$ and $\alpha_{2} = \cdots = \alpha_{m} = \beta_0 = 0$. The second order Adams-Bashforth methods is:
+\begin{equation}
+y_{n+1} = y_{n} + h(\frac{3}{2}f(t_{n}, y_{n}) - \frac{1}{2}f(t_{n-1}, y_{n-1}))
+\end{equation} 
+
+\item The Adams-Moulton methods are constructed as implicit methods by removing the constraint that $\beta_0 = 0$. A third order Adams-Moulton method takes the form:
+\begin{equation}
+y_{n+1} = y_{n} + h(\frac{5}{12}f(t_{n+1}, y_{n+1}) + \frac{2}{3}f(t_n, y_n) - \frac{1}{12}f(t_{n-2}, y_{n-2}))
+\end{equation}
+
+\item The Backward differentiation formulas (BDF) methods are implicit methods with $\beta_1 = \cdots = \beta_m = 0$. These methods are especially used for the solution of stiff differential equations. A second order A-stable BDF method takes the form:
+\begin{equation}
+y_{n+1} - \frac{4}{3}y_{n} + \frac{1}{3}y_{n-1} = \frac{2}{3}hf(t_{n+1},y_{n+1})
+\end{equation}
+\end{enumerate}
+It has been proved that explicit methods can never be A-stable. An implicit multistep method can only be A-stable if their order is at most $2$, while an A-stable Runge-Kutta can have arbitrarily high order \cite{Hairer1993}. The difficulty of exceeding second order of an A-stable multistep methods is called Dahlquist barrier \cite{Dahlquist1963, Dahlquist1956}.
+
+\item Boundary value methods are the third way between linear multistep and Runge-Kutta methods proposed in a few years ago \cite{Brugnano1998}. These class of methods transform the original initial value problem into an equivalent boundary value problem using linear multistep formula (LMF), and is able to overcome the major drawback of the linear multistep methods: Dahlquist barriers. It is know that even the original LMF is unstable, the corresponding boundary value method can be $0$-stable and A-stable, provided appropriate boundary conditions are given.
+\end{enumerate}
+
+
