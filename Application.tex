@@ -111,21 +111,20 @@ The above derivation considers only one triangle, and therefore the actual sprin
 
 It is interesting to notice that, if the second term in \Eq{eq:v_force} is neglected, Delingette's model is almost the same model used by \cite{Kim2013} except variable tensile stiffness. Numerical study suggests that both the variation of tensile stiffness and the additional term due to angular stiffness are significant for realistic fabric simulation. Numerical implementation and testing also show that such model is robust and conforms with both the Young modulus and Poisson ratio of a given fabric material. In many literatures \cite{}, the internal force is decomposed to several parts, such as stretch forces, shear forces and bend forces. Our model is based on the formulation for elastic membrane, and thus only the in-plane forces are considered. The bend forces are relatively small comparing to the the other forces, so that is neglected in the current model.
 
-The parachute simulation in this paper is uniformly built based on the above model, but a few modification is needed in order to simulate different parts of the parachute system. Firstly, the parachute canopy is discretized into a elements using Delaunay triangulation and then we can apply the spring mass model directly. Secondly, the suspension lines are modeled by lists of joint mass points with their ends connecting to the canopy surface. However, the intensity of a real suspension line are much higher than a fabric surface, so that deserves special treatments. One attempt is to increase the tensile stiffness of the strings, but will reduce the time step size considering the numerical stability of explicit method. An alternative way is to use multiple parallel springs, which is able to increase the equivalent stiffness without affecting the numerical stability. Finally, dome-type parachute canopy are constructed from a series of fabric sectors called gores. The gores help the parachute to resemble a semisphere shape after inflation. Similar as the suspension lines, the gore boundaries are also modeled by curves with higher tensile stiffness. \Fig{fig:goremesh} demonstrates the mesh structure of such model. 
-
-\begin{figure}[!ht] \centering \begin{tabular}{cc}
-\epsfig{file=Figures/goremesh,width=0.55\hsize} \end{tabular} \caption{The
-spring model on a triangulated mesh. Each vertex point in the mesh represents a
+The parachute simulation in this paper is uniformly built based on the above model, but a few modification is needed in order to simulate different parts of the parachute system. The parachute canopy is discretized into a elements using Delaunay triangulation and then we can apply the spring mass model directly. However, the suspension lines are modeled by lists of joint mass points with their ends connecting to the canopy surface. The intensity of a real suspension line are much higher than a fabric surface, so that deserves special treatments. One attempt is to increase the tensile stiffness of the strings, but will reduce the time step size considering the numerical stability of explicit method. An alternative way is to use multiple parallel springs, which is able to increase the equivalent stiffness without affecting the numerical stability. Finally, dome-type parachute canopy are constructed from a series of fabric sectors called gores. The gores help the parachute to resemble a semisphere shape after inflation. Similar as the suspension lines, the gore boundaries are also modeled by curves with higher tensile stiffness. \Fig{fig:goremesh} demonstrates the mesh structure of such model. Each vertex point in the mesh represents a
 mass point with point mass $m$. Each edge of a triangle has a tensile stiffness.
 With the equilibrium lengths set during the initialization, the changing length
 of each side exerts a tensile spring force on the two neighboring vertices in
 opposite directions.  Each angle of a triangle has an angular stiffness which is
 set during the initialization. An additional tensile force is generated when the
-the angle is changed. Gore boundaries are modeled by curves with higher tensile
-stiffness.} \label{fig:goremesh} \end{figure}
+the angle is changed.
 
-In order to interact with the environment, we also added external forces, such as gravity 
-and air-drag, to the internal forces. The gravity force is a constant force, and thus easy to implement:
+\begin{figure}[!ht] \centering \begin{tabular}{cc}
+\epsfig{file=Figures/goremesh,width=0.55\hsize} \end{tabular} \caption{The
+spring model on a triangulated mesh.} \label{fig:goremesh} \end{figure}
+
+In order to interact with the environment, we also add external forces, such as gravity 
+and air-drag, to the force term. The gravity force is a constant force, and thus easy to implement:
 \begin{equation}
 \vect{f}_{g,i} = m_i \vect{g}
 \end{equation}
@@ -601,7 +600,7 @@ where $\mathbf{u}(\mathbf{k},t)$ is the Fourier-transformed velocity function, $
 
 The second group is to evaluate the external force in physical space. This approach is attractive for applications since it does not require transformation to Fourier space and is easily integrated into physical-space numerical codes. Lundgren proposed a forcing function which is directly proportional to the velocity \cite{Lundgren2003Linearly}. Rosales studied the properties of this linear forcing scheme for isotropic turbulence, and showed the linearly forced system converges to a stationary state that does not depend on the spectral shape of the initial condition \cite{Rosales2005Linear}. The Lundgren's linear forcing scheme is determined with the following equation:
 \begin{equation}
-\vect{f}(\vect{x}, t) = \frac{\epsilon{in}}{3u_{rms}^2}\vect{u}
+\vect{f}(\vect{x}, t) = \frac{\epsilon_{in}}{3u_{rms}^2}\vect{u}
 \end{equation}
 During the simulation, the root-mean-square velocity $u_{rms}$ is recalculated every time step while the energy injection rate $\epsilon_{in}$ is kept equal to a constant.
 The cross section of the initial and stationary vorticity field is displayed in \Fig{vort}.
