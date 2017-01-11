@@ -52,9 +52,11 @@ The Reynolds number around a full-size parachute usually exceeds several million
 
 \Fig{turbulent_visc_vel_10ms} shows the same test, yet with inlet velocity $10m/s$. It is reasonable that the parachutes are subjected to stronger drag force than the case of $3m/s$, and hence falls much slower. The Realizable model still predicts the smallest value of the viscosity in the wake of the parachute. However, since the inflow velocity increases, the kinetic energy and dissipation rate produced at the inlet are able to propagate further and dominate the viscosity field. As the parachute falls and interacts with the inlet flow, it pushes the turbulent viscosity field away to each side and generates vortex-like pattern.
 
-The standard $k-\varepsilon$ model assumed that the flow is fully turbulent, and the effects of molecular viscosity are negligible. This model works fairly well for a wide range of wall-bounded and free shear flows. However, since the parachute canopy prevents the flow from passing through and the flow behind the parachute is less-turbulent, the standard model tends to overestimate the turbulent viscosity in the parachute wake. The RNG model is integrated to obtain an accurate description of how the effective turbulent transport varies with the effective Reynolds number, allowing the model to better handle low-Reynolds-number and near-wall flows. The RNG model is more responsive to the effects of rapid strain and streamline curvature than the standard model, and hence in the rapidly strained flows, it yields a lower turbulent viscosity than the standard model. The Realizable model is proposed by satisfying certain mathematical constrains on the normal stresses, consistent with the physics of turbulent flows. It is believed that the modified form of the equation for $\varepsilon$ better represents the spectral energy transfer. The performance of the model has been found to be substantially better than that of the standard model.
+\Fig{turbulent_visc_vel_15ms} displays the velocity and viscosity field with inlet velocity $15m/s$. This test gives a real turbulence field, and therefore the predictions of the three models are expected to be reasonable. The viscosity field predicted by the RNG model resembles the standard one but with more details in the wake, while the realizable model produces a completely different viscosity field. This field results in a more chaotic velocity field than the other two cases. We also notice that using turbulence model makes the parachute drop significantly faster than the case without turbulence model. This can be explained by the fact that the turbulence viscosity plays as a friction between fluid elements, and hence reduce the velocity magnitude and the drag force.
 
-\begin{figure}
+In summary, the standard $k-\varepsilon$ model assumed that the flow is fully turbulent, and the effects of molecular viscosity are negligible. This model was demonstrated to work fairly well for a wide range of wall-bounded and free shear flows. However, since the parachute canopy prevents the flow from passing through and the flow behind the parachute is less-turbulent when the inlet velocity is small, the standard model tends to overestimate the turbulent viscosity in the parachute wake. The RNG model is integrated to obtain an accurate description of how the effective turbulent transport varies with the effective Reynolds number, allowing the model to better handle low-Reynolds-number and near-wall flows. The RNG model is expected to be more responsive to the effects of rapid strain and streamline curvature than the standard model. Hence in the rapidly strained flows, it yields a lower turbulent viscosity than the standard model. The Realizable model is proposed by satisfying certain mathematical constrains on the normal stresses, consistent with the physics of turbulent flows. It is believed that the modified form of the equation for $\varepsilon$ better represents the spectral energy transfer. The performance of the model has been found to be substantially better than that of the standard model.
+
+\begin{figure}[h!]
 \centering
 \includegraphics[width=0.24\textwidth]{Figures/c9-vel-std-3ms.jpg}
 \includegraphics[width=0.24\textwidth]{Figures/c9-vel-rng-3ms.jpg}
@@ -68,7 +70,7 @@ The standard $k-\varepsilon$ model assumed that the flow is fully turbulent, and
 \label{turbulent_visc_vel_3ms}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h!]
 \centering
 \includegraphics[width=0.24\textwidth]{Figures/c9-vel-std-10ms.jpg}
 \includegraphics[width=0.24\textwidth]{Figures/c9-vel-rng-10ms.jpg}
@@ -80,6 +82,20 @@ The standard $k-\varepsilon$ model assumed that the flow is fully turbulent, and
 \includegraphics[width=0.24\textwidth]{Figures/c9-vis-lam-10ms.jpg}
 \caption{Velocity magnitude and turbulent viscosity for C-$9$ parachute using different turbulent models at the same time frame. The inlet velocity is $10m/s$. The figures in the upper row displays the velocity magnitude and the figures in the lower row shows the turbulent viscosity.}
 \label{turbulent_visc_vel_10ms}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.24\textwidth]{Figures/c9-vel-std-15ms.jpg}
+\includegraphics[width=0.24\textwidth]{Figures/c9-vel-rng-15ms.jpg}
+\includegraphics[width=0.24\textwidth]{Figures/c9-vel-real-15ms.jpg}
+\includegraphics[width=0.24\textwidth]{Figures/c9-vel-lam-15ms.jpg}\\
+\includegraphics[width=0.24\textwidth]{Figures/c9-vis-std-15ms.jpg}
+\includegraphics[width=0.24\textwidth]{Figures/c9-vis-rng-15ms.jpg}
+\includegraphics[width=0.24\textwidth]{Figures/c9-vis-real-15ms.jpg}
+\includegraphics[width=0.24\textwidth]{Figures/c9-vis-lam-15ms.jpg}
+\caption{Velocity magnitude and turbulent viscosity for C-$9$ parachute using different turbulent models at the same time frame. The inlet velocity is $15m/s$. The figures in the upper row displays the velocity magnitude and the figures in the lower row shows the turbulent viscosity.}
+\label{turbulent_visc_vel_15ms}
 \end{figure}
 \subsection{Porosity model}
 Two sets of numerical tests are carried out to validate the porosity model 
@@ -263,12 +279,12 @@ In order to generate a folded shape of the parachute canopy before the simulatio
 \end{figure}
 
 There exist many ways to fold a parachute. The standard folding procedure includes three steps: flat fold, long fold, and stow into a package. These steps should be carried out one by one without interfering each other.
-\section{Cloud microphysics}
+\section{Results for turbulent entrainment and mixing}
 \subsection{Experimental setup}
-Three different initial configurations of cloudy area are used to investigate
-the configuration impact. First, as in \cite{And04}, the function is defined
-according to the sign of the velocity function in physics space. This
-configuration is referred to as case 1 and the water vapor mixing ratio is
+Three different initial configurations are used to investigate
+the configuration impact. First, as in \cite{And04}, the function of the water vapor mixing 
+ratio $q_v(\vect{x}, t = 0)$ is defined according to the sign of the first component of the velocity 
+field. This configuration is referred to as C ase 1 and the water vapor mixing ratio is
 given by
 
 \begin{equation}
@@ -279,7 +295,9 @@ q_{v,e}, & u(\mathbf{x}) \le 0
 \end{array}\right.\label{case1}
 \end{equation}
 
-In \cite{Kumar11}, the author used a slab-like cloud configuration approximated with a simple discontinuous function, and is referred to as Case 2:
+In \cite{Kumar11}, the author used a slab-like cloud configuration approximated by a continuous 
+function with a rapid change at the cloud-clear air interface. We notice that this artificial function is 
+used due to the shortcoming of the spectral method, which has the difficulty to handle the profile with discontinuities. Since a finite difference method is used here, we can simply replace this function with a discontinuous formula and refer it as Case 2:
 
 \begin{equation}
 \mbox{case 2: } q_v(x,t=0) = 
@@ -309,36 +327,37 @@ q_{v,e}, & \mbox{elsewhere}
 
 The temperature field is initialized by imposing the neutral buoyancy condition \cite{Kumar14}:
 \begin{equation}
-T(x,t = 0) = T_0 - 0.608T_0[q_v(x,t = 0) - q_{v0}]
+T(\vect{x},t = 0) = T_0 - 0.608T_0[q_v(\vect{x},t = 0) - q_{v,0}]
 \end{equation}
 where the reference values are defined by volume averages $T_0 = \langle
-T(t=0)\rangle_V$ and $q_{v0} = \langle q_v(t=0)\rangle_V$. This condition
+T(t=0)\rangle_V$ and $q_{v,0} = \langle q_v(t=0)\rangle_V$. This condition
 implies that neither the vapor mixing ratio nor temperature would contribute to
 the initial buoyancy. This procedure is only performed for the initial
 temperature field and will completely follow \Eq{eq:Temp} afterwards.
 \Fig{fig:slice_case123} illustrates the initial fields of water vapor mixing
 ratio and temperature for the three cases.
 
-\begin{figure}\centering
+\begin{figure}[H]\centering
 \includegraphics[width=0.8\textwidth]{Figures/supersat_case123}\\
 \includegraphics[width=0.8\textwidth]{Figures/temp_case123}
 \caption{Cross sectional view of the initial supersaturation and temperature (K) field for different cases: case 1, 2, 3 from left to right. The cloudy part occupies about half of the computational domain.\label{fig:slice_case123}}
 \end{figure}
 
-\subsection{Initial droplets}
 At beginning, a total of $10^{7}$ droplets with the same radius of $15\mu m$
-are uniformly placed in the cloudy area, so as to make the droplet number
-concentration about $153{cm}^{-3}$. Note that for the forced turbulence
+are uniformly placed in the cloudy area, so that the droplet number
+concentration is about $153{cm}^{-3}$. Note that for the forced turbulence
 scenario, the velocity field needs a few steps ($5$ seconds here) to relax to a
 steady state. Therefore, the droplets are released to move and change their
-sizes according to the physics law after this spin-up period. For the decaying
+sizes after this spin-up period. For the decaying
 turbulence, the droplets are released at time $t = 0s$ since there is no needs
 to seek for a steady state. A droplet with radius smaller than $1\mu m$ will be
 immediately removed from the computational domain and will not contribute to
 any statistical results.
 
 For convenience, \Table{tb:parameters} summarizes the key quantities and initial conditions.
-\begin{table}[h]
+\begin{table}[H]
+\centering
+\begin{adjustbox}{max width = \textwidth}
 \begin{tabular}{l c c c c c}
 \hline\hline
 Quantity & Symbol & Value & Quantity & Symbol & Value\\
@@ -352,11 +371,12 @@ Dissip length& $\eta$ & $10^{-3}m$ & Evaporation time & $\tau_{evap}$ & $2.09s$\
 Dissip time& $\tau_{\eta}$ & $0.087s$ & Reaction time & $\tau_{react}$ & $4.52s$\\
 \hline
 \end{tabular}
+\end{adjustbox}
 \caption{Initial conditions}
 \label{tb:parameters}
 \end{table}
 
-\subsection{Results and analysis}
+\subsection{Thermodynamics}
 \Fig{fig:therm_dynam} compares the temporal evolution of the turbulent kinetic
 energy (a), droplets number concentration (b), standard deviation and relative
 dispersion of temperature (c,d) and the same for water vapor mixing ratio
@@ -404,16 +424,24 @@ continue to condensate. This phase transition process reduce the difference of
 vapor mixing ratio between clear air and cloudy air, thus the transient growth
 of the deviation can hardly be observed.
 
-\begin{figure}\centering \includegraphics[width=0.48\textwidth]{Figures/tke}
-\includegraphics[width=0.48\textwidth]{Figures/num_con}\\
-\includegraphics[width=0.48\textwidth]{Figures/temp_std}
-\includegraphics[width=0.48\textwidth]{Figures/temp_dsp}\\
-\includegraphics[width=0.48\textwidth]{Figures/vapor_std}
-\includegraphics[width=0.48\textwidth]{Figures/vapor_dsp}
+\begin{figure}[H]\centering 
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/tke}}
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/num_con}}
+\end{figure}
+
+\begin{figure}[H]\ContinuedFloat
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/temp_std}}
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/temp_dsp}}
+\end{figure}
+
+\begin{figure}[H]\ContinuedFloat
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/vapor_std}}
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/vapor_dsp}}
 \caption{Thermodynamics of three cases, from left to right, up to bottom, are
 turbulence kinetic energy (a), droplets number concentration (b), standard
 deviation (c), relative dispersion (d) of temperature field and the same for
-the vapor mixing ratio (e,f).\label{fig:therm_dynam}} \end{figure}
+the vapor mixing ratio (e,f).}\label{fig:therm_dynam} 
+\end{figure}
 
 \subsection{Microphysics}
 The droplet size distributions for case 1, 2 ,3 in both decaying and forced
@@ -430,13 +458,19 @@ cases are caused by the buoyancy term in \Eq{eq:source_term}. In specific, the
 buoyancy plays as a source of kinetic energy, so as to influence the motion of
 the fluid field.  
 
-\begin{figure}[h]\centering
-\includegraphics[width=0.48\textwidth]{Figures/pdf_radius_d1}
-\includegraphics[width=0.48\textwidth]{Figures/pdf_radius_f1}\\
-\includegraphics[width=0.48\textwidth]{Figures/pdf_radius_d2}
-\includegraphics[width=0.48\textwidth]{Figures/pdf_radius_f2}\\
-\includegraphics[width=0.48\textwidth]{Figures/pdf_radius_d3}
-\includegraphics[width=0.48\textwidth]{Figures/pdf_radius_f3}
+\begin{figure}[H]\centering
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_radius_d1}}
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_radius_f1}}
+\end{figure}
+
+\begin{figure}[H]\ContinuedFloat
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_radius_d2}}
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_radius_f2}}
+\end{figure}
+
+\begin{figure}[H]\ContinuedFloat
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_radius_d3}}
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_radius_f3}}
 \caption{Evolution of radius distribution for decaying turbulence (left column)
 and forced turbulence (right column). From up to bottom are case 1, case 2 and
 case 3 respectively.}\label{fig:rad_distri} \end{figure}
@@ -451,13 +485,19 @@ environment becomes much more homogeneous, that is most droplets stay in a
 similar environment. Finally, the environment becomes well-mixed, droplets
 completely evaporate and all the cases reach the same state.
 
-\begin{figure}[h]\centering
-\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_d1}
-\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_f1}\\
-\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_d2}
-\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_f2}\\
-\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_d3}
-\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_f3}
+\begin{figure}[H]\centering
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_d1}}
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_f1}}
+\end{figure}
+
+\begin{figure}[H]\ContinuedFloat
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_d2}}
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_f2}}
+\end{figure}
+
+\begin{figure}[H]\ContinuedFloat
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_d3}}
+\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_f3}}
 \caption{Evolution of supersaturation distribution for decaying turbulence
 (left column) and forced turbulence (right column). From up to bottom are case
 1, case 2 and case 3 respectively. In conclusion, the shape of the cloud
@@ -468,11 +508,10 @@ decaying cases. The results suggest that the initial shape of cloud filaments
 should be considered as an important factor when studying mixing scenario
 without external forcing.}\label{fig:supersat_distri} \end{figure}
 
-\subsection{Mixing scenario}\label{mixing_processes} Depending on the mixing
-scenario (the homogeneity of mixing), the droplets evolve in quite different
-ways. In the extremely homogeneous mixing scenario, droplet concentration does
-not change while liquid water mixing ratio and thus the mean radius decreases.
-In the extremely inhomogeneous mixing scenario, some droplets in the cloud
+\subsection{Entrainment and mixing processes}
+The cloud droplets evolve in different ways depending on the mixing scenario. In the 
+extremely homogeneous mixing, all the droplets stay in the same environment.
+In the extremely inhomogeneous mixing, some droplets in the cloud
 completely evaporate, reducing droplet number concentration and liquid water
 mixing ratio while keeping mean radius roughly unchanged. The mixing of clear
 and cloudy air is often quantified by the Damkohler number:
@@ -629,7 +668,7 @@ settings. In conclusion, the behaviors of the mixing trajectories are not only
 determined by the relative time scale or Damkohler number but also by the
 distribution of the cloud water content.
 
-\begin{figure}\centering
+\begin{figure}[H]\centering
 \includegraphics[width=0.48\textwidth]{Figures/mixing_cased1}
 \includegraphics[width=0.48\textwidth]{Figures/mixing_casef1}\\
 \includegraphics[width=0.48\textwidth]{Figures/mixing_cased2}
@@ -644,7 +683,7 @@ domain. Color indicates the time for each record. Only the boxes with non-zero
 particles at the initial time are considered. \label{fig:mixing_diagram}}
 \end{figure}
 
-\subsection{Effects of sedimentation on preferential concentration}
+\subsection{Preferential concentration}
 Clustering of inertial particles has been extensively studied via both
 experiments and numerical simulations \cite{Sundaram97, Reade2000}, but the
 sedimentation effects on the clustering are poorly understood. In this section,
