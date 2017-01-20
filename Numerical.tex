@@ -170,8 +170,7 @@ The stability function of a Runge-Kutta method is:
 where $e$ denotes an unity vector.
 The frequently used Runge-Kutta method are listed below using Butcher tableau:
 
-\begin{enumerate}
-\item Classic fourth-order explicit Runge-Kutta method:
+Classic fourth-order explicit Runge-Kutta method:
 \begin{equation}
 \begin{array}{c|cccc}
 0   & 0   & 0   & 0 & 0\\
@@ -182,42 +181,18 @@ The frequently used Runge-Kutta method are listed below using Butcher tableau:
 & 1/8 & 3/8 & 3/8 & 1/8
 \end{array}
 \end{equation}
-Note that this method does not have a step control parameters. It is also not suitable for the solution of stiff equations due to its bounded region of absolute stability. It is known that explicit Runge-Kutta methods can never be A-stable.
-
-\item Implicit fourth-order Gauss-Legendre methods based on the points of Gauss-Legendre quadrature:
-\begin{equation}
-\begin{array}{c|cccc}
-1/2-\sqrt{3}/6   & 1/4   & 1/4-\sqrt{3}/6 \\
-1/2+\sqrt{3}/6   & 1/4+\sqrt{3}/6    & 1/4 \\
-\hline
-& 1/2 & 1/2\\
-& 1/2 + 1/2\sqrt{3} & 1/2-1/2\sqrt{3}
-\end{array}
-\end{equation}
-The advantage of implicit Runge-Kutta methods is their greater stability. It has been proved that Gauss-Legendre method with $s$ stage has order $2s$ and is A-stable.
-\end{enumerate}
+Note that this method does not have a step control parameters. It is also not suitable for the solution of stiff equations due to its bounded region of absolute stability. It is known that explicit Runge-Kutta methods can never be A-stable. It has been proved that Gauss-Legendre method with $s$ stage has order $2s$ and is A-stable.
 
 \item Multistep methods attempt to achieve efficiency by using the information from previous steps. A general linear multistep method takes the following form
 \begin{equation}
 y_{k+1}=\sum_{i=1}^{m}\alpha_{i}y_{k+1-i}+h\sum_{i=0}^{m}\beta_{i}f\left(t_{k+1-i},y_{k+1-i}\right)
 \end{equation}
 where $\left\{ \alpha_{i}\right\} $ and $\left\{ \beta_{i}\right\} $ are determined by polynomial interpolation.
-\begin{enumerate}
-\item The Adams-Bashforth methods are explicit methods. The coefficients $\alpha_1 = 1$ and $\alpha_{2} = \cdots = \alpha_{m} = \beta_0 = 0$. The second order Adams-Bashforth methods is:
-\begin{equation}
-y_{n+1} = y_{n} + h(\frac{3}{2}f(t_{n}, y_{n}) - \frac{1}{2}f(t_{n-1}, y_{n-1}))
-\end{equation} 
 
-\item The Adams-Moulton methods are constructed as implicit methods by removing the constraint that $\beta_0 = 0$. A third order Adams-Moulton method takes the form:
-\begin{equation}
-y_{n+1} = y_{n} + h(\frac{5}{12}f(t_{n+1}, y_{n+1}) + \frac{2}{3}f(t_n, y_n) - \frac{1}{12}f(t_{n-2}, y_{n-2}))
-\end{equation}
-
-\item The Backward differentiation formulas (BDF) methods are implicit methods with $\beta_1 = \cdots = \beta_m = 0$. These methods are especially used for the solution of stiff differential equations. A second order A-stable BDF method takes the form:
+The Backward differentiation formulas (BDF) methods are implicit methods with $\beta_1 = \cdots = \beta_m = 0$. These methods are especially used for the solution of stiff differential equations. A second order A-stable BDF method takes the form:
 \begin{equation}
 y_{n+1} - \frac{4}{3}y_{n} + \frac{1}{3}y_{n-1} = \frac{2}{3}hf(t_{n+1},y_{n+1})
 \end{equation}
-\end{enumerate}
 It has been proved that explicit methods can never be A-stable. An implicit multistep method can only be A-stable if their order is at most $2$, while an A-stable Runge-Kutta method can have arbitrarily high order \cite{Hairer1993}. The difficulty of exceeding second order of an A-stable multistep methods is called Dahlquist barrier \cite{Dahlquist1963, Dahlquist1956}.
 
 \item Boundary value methods are the third way between linear multistep and Runge-Kutta methods proposed in a few years ago \cite{Brugnano1998}. These class of methods transform the original initial value problem into an equivalent boundary value problem using linear multistep formula (LMF), and is able to overcome the major drawback of the linear multistep methods: Dahlquist barriers. It is known that even the original LMF is unstable, the corresponding boundary value method can be $0$-stable and A-stable, provided appropriate boundary conditions are given.

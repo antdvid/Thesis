@@ -7,6 +7,8 @@
 \usepackage{adjustbox}
 \usepackage{float}
 \usepackage{subcaption}
+\usepackage{lingmacros}
+\usepackage{tree-dvips}
 
 %\usepackage{epstopdf}
 \usepackage[dvips]{epsfig}
@@ -15,6 +17,7 @@
 \usepackage{color}
 \usepackage{listings}
 \usepackage{verbatim}
+\usepackage[margin=1.5in]{geometry}
 
 \DeclareGraphicsExtensions{.pdf,.png,.jpg,.eps}
 
@@ -56,23 +59,16 @@
 
 \begin{document}
 \pagenumbering{gobble}
-\pagestyle{prelim}
 \include{prelim}
-\include{abstract}
-\include{frontispiece}
-\include{acknowledge}
-\include{publication}
-
-\pagestyle{body}
 \pagenumbering{arabic}
 
-\begin{spacing}{\defaultspace}  % adjust spacing
+\begin{singlespacing} % adjust spacing
 \include{Background}
 \include{Numerical}
 \include{Application}
 \include{Results}
 \include{Conclusion}
-\end{spacing}
+\end{singlespacing}
 
 \begin{spacing}{\singlespace}
 \bibliographystyle{plain}       % plain or ieeetr
