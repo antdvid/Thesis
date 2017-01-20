@@ -2,9 +2,9 @@
 The success of the computational fluid dynamics highly depends on the underlying numerical method. Until now, various numerical method has been proposed to solve the partial differential equation and ordinary differential equation. However, instead of applying a general approach, some special techniques are usually required for a specific problem. In this chapter, the numerical method for Navier-Stokes equation, advection-diffusion-reaction equation and ordinary differential equation are introduced. In the meanwhile, the criteria of their convergence and stability are also discussed.
 
 \section{Projection method for incompressible Navier-Stokes equation}
-A major difficulty for the numerical simulation of incompressible flows is that the velocity and the pressure are coupled by the incompressibility constraint \cite{Guermond2005Overview}. In 1960s, Chorin and Temam proposed the fraction-step method in their ground breaking work \cite{} to overcome the difficulty in time-dependent viscous incompressible flow. In their method, the velocity and pressure are decoupled at each time step, and consequently only a sequence of decoupled elliptic equation are needed to solve. This makes the projection method very efficient for large scale numerical simulation.
+A major difficulty for the numerical simulation of incompressible flows is that the velocity and the pressure are coupled by the incompressibility constraint \cite{Guermond2006Overview}. In 1960s, Chorin and Temam proposed the fraction-step method in their ground breaking work \cite{Temam1969approximation, Chorin1968Numerical} to overcome the difficulty in time-dependent viscous incompressible flow. In their method, the velocity and pressure are decoupled at each time step, and consequently only a sequence of decoupled elliptic equation are needed to solve. This makes the projection method very efficient for large scale numerical simulation.
 
-We consider an incompressible fluid in a $d = 2, 3$-dimensional bounded domain $\Omega \subset \Re^d$ during the time interval $(0, T)$. Let $\Delta t_i > 0$ be the $i$-th time step size and use notation $\vect{w}^n$ to represent an approximation to $\vect{w}(t^n)$, where $t^n = \sum_{i = 1}^{n}\Delta t_i$. Following the numerical schemes proposed in \cite{}, we have the second-order, time-discrete semi-implicit forms of \Eq{mom_eqn} and \Eq{div_free}:
+We consider an incompressible fluid in a $d = 2, 3$-dimensional bounded domain $\Omega \subset \Re^d$ during the time interval $(0, T)$. Let $\Delta t_i > 0$ be the $i$-th time step size and use notation $\vect{w}^n$ to represent an approximation to $\vect{w}(t^n)$, where $t^n = \sum_{i = 1}^{n}\Delta t_i$. Following the numerical schemes proposed in \cite{Brown2001Accurate}, we have the second-order, time-discrete semi-implicit forms of \Eq{mom_eqn} and \Eq{div_free}:
 \begin{equation}
 \frac{\vect{u}^{n+1} - \vect{u}^n}{\Delta t} + \nabla p^{n+1/2} = 
 -[(\vect{u}\cdot\nabla)\vect{u}]^{n+1/2} + \frac{\nu}{2}\nabla^2(\vect{u}^{n+1} + \vect{u}^n)
@@ -19,7 +19,7 @@ with boundary condition
 B(\vect{u}^{n+1}) = 0
 \label{ns_bc}
 \end{equation}
-where $[(\vect{u}\cdot\nabla)\vect{u}]^{n+1/2}$ represents the convective derivative term at time level $t^{n+1/2}$, and can be computed explicitly\cite{KimMoin85}; $B(\cdot)$ is the boundary condition of $u$. It is clear that \Eq{dis_mom_eqn} and \Eq{dis_div_free} are coupled together due to the appearance of $p$, and hence difficult to solve directly. A fractional step procedure can be used to firstly solve \Eq{dis_mom_eqn} while ignoring the pressure gradient term (pressure-free projection method), and then projecting the solution onto the space of divergence-free fields to obtain $\vect{u}^{n+1}$. The pressure-Poisson version of projection method consists of the following steps:
+where $[(\vect{u}\cdot\nabla)\vect{u}]^{n+1/2}$ represents the convective derivative term at time level $t^{n+1/2}$, and can be computed explicitly\cite{Kim1985Application}; $B(\cdot)$ is the boundary condition of $u$. It is clear that \Eq{dis_mom_eqn} and \Eq{dis_div_free} are coupled together due to the appearance of $p$, and hence difficult to solve directly. A fractional step procedure can be used to firstly solve \Eq{dis_mom_eqn} while ignoring the pressure gradient term (pressure-free projection method), and then projecting the solution onto the space of divergence-free fields to obtain $\vect{u}^{n+1}$. The pressure-Poisson version of projection method consists of the following steps:
 
 Step 1: Compute the tentative velocity
 \begin{eqnarray}
@@ -33,12 +33,11 @@ B(\mathbf{u}^*) = 0,
 Step 2: Projection step
 \begin{equation} \frac{1}{\rho}\Delta_h p^{n+1/2} =
 \nabla_h\cdot \mathbf{u}^*/\Delta t 
-\label{proj} 
 \end{equation}
 
 Step 3: Update new velocity
 \begin{equation} \mathbf{u}^{n+1} = \mathbf{u}^* -
-\frac{\Delta t}{\rho}\nabla_h p^{n+1/2} \label{newvel} \end{equation}
+\frac{\Delta t}{\rho}\nabla_h p^{n+1/2} \end{equation}
 
 A convenient choice to discretize $\vect{u}$ and $p$ in space is to use finite difference method on regular computational grid. Let $\mathbf{u}^n_{ijk}$ represent the
 numerical solution of velocity field at grid node  $\mathbf{x}_{i,j,k} =
@@ -50,24 +49,22 @@ and an analogous definition holds for the pressure $p^n_{ijk}$ ($i =
 \frac{u_{i+1,j,k}-u_{i-1,j,k}}{2\Delta x} +
 \frac{v_{i,j+1,k}-v_{i,j-1,k}}{2\Delta y} +
 \frac{w_{i,j,k+1}-w_{i,j,k-1}}{2\Delta z}
-\label{divU} 
 \end{equation}
 
 \begin{equation}
-\label{gradP} \nabla_h p =
+\nabla_h p =
 [\frac{p_{i+1,j,k}-p_{i-1,j,k}}{2\Delta x},
 \frac{p_{i,j+1,k}-p_{i,j-1,k}}{2\Delta y},
 \frac{p_{i,j,k+1}-p_{i,j,k-1}}{2\Delta z}]\\    
 \end{equation}
 
 \begin{multline}
-\label{lapP} 
 \Delta_h p = \frac{p_{i+1,j,k}+p_{i-1,j,k}-2p_{i,j,k}}{\Delta x^2} +
 \frac{p_{i,j+1,k}+p_{i,j-1,k}-2p_{i,j,k}}{\Delta y^2} \\
  \quad +\frac{p_{i,j,k+1}+p_{i,j,k-1}-2p_{i,j,k}}{\Delta z^2} 
 \end{multline}
 
-This method is appealing since it is second order in both time and space. It also prohibits errors in the pressure gradient, which could accumulate in time \cite{}. In \Eq{dis_mom_eqn}, the nonlinear term $adv(\vect{u}) = [(\vect{u}\cdot\nabla)\vect{u}]^{n+1/2}$ at half time step is approximated by extrapolation of the results at previous steps, that is $adv^{n+1/2} = (1+\Delta t_n/(2\Delta t_{n-1}))adv^{n} -\Delta t_n/(2\Delta t_{n-1})adv^{n-1}$. Since this hyperbolic term is explicitly applied to the equation \ref{dis_mom_eqn}, a total variation diminishing (TVD) scheme is always desirable. Ignoring the notation of time, the first order upwind scheme for $\text{adv}(u_i)$ can be written as:
+This method is appealing since it is second order in both time and space. It also prohibits errors in the pressure gradient, which could accumulate in time \cite{Guermond2006Overview}. In \Eq{dis_mom_eqn}, the nonlinear term $adv(\vect{u}) = [(\vect{u}\cdot\nabla)\vect{u}]^{n+1/2}$ at half time step is approximated by extrapolation of the results at previous steps, that is $adv^{n+1/2} = (1+\Delta t_n/(2\Delta t_{n-1}))adv^{n} -\Delta t_n/(2\Delta t_{n-1})adv^{n-1}$. Since this hyperbolic term is explicitly applied to the equation \ref{dis_mom_eqn}, a total variation diminishing (TVD) scheme is always desirable. Ignoring the notation of time, the first order upwind scheme for $\text{adv}(u_i)$ can be written as:
 \begin{equation}
 \text{adv}(u_i) = u_i^+ u_x^- + u_i^- u_x^+ 
 	  + v_i^+ u_y^- + v_i^- u_y^+
@@ -75,7 +72,7 @@ This method is appealing since it is second order in both time and space. It als
 \label{upwind_adv}
 \end{equation}
 where $u_i^+ = \max(u_i, 0)$ and $u_i^- = \min(u_i, 0)$; $u_x^+ = (u_{i+1}-u_{i})/\Delta x$ and $u_x^- = (u_i - u_{i-1})/\Delta x$.
-A fifth order weighted essential non-oscillatory (WENO) scheme is another popular class of finite difference scheme for numerically approximate solutions of hyperbolic conservation laws due to its high order accuracy in smooth regions and essentially non-oscillatory transition for discontinuities. Its third order version was first introduced in \cite{}, and then extended to arbitrary order accurate in \cite{}. According to the WENO scheme \cite{}, the computation of the hyperbolic term $\text{adv}(u) = uu_x + vu_y + wu_z$ can be generalized to the computation of the derivative of a flux function $f(u)$, which can be either linear (as the last two terms 
+A fifth order weighted essential non-oscillatory (WENO) scheme is another popular class of finite difference scheme for numerically approximate solutions of hyperbolic conservation laws due to its high order accuracy in smooth regions and essentially non-oscillatory transition for discontinuities. Its third order version was first introduced in \cite{Liu1994Weighted}, and then extended to arbitrary order accurate in \cite{Jiang1996Efficient}. According to the WENO scheme \cite{Jiang1996Efficient}, the computation of the hyperbolic term $\text{adv}(u) = uu_x + vu_y + wu_z$ can be generalized to the computation of the derivative of a flux function $f(u)$, which can be either linear (as the last two terms 
 $vu_y$ and $wu_z$) or nonlinear (the first term written as $(u^2/2)_x$).
 For a general flux $f(u)$, its derivative with respect to $x$ can be written as 
 \begin{equation}
@@ -120,18 +117,18 @@ B(\Phi^{n+1}) = 0
 \end{equation}
 As stated before, the advection term $[(\vect{U}\cdot\nabla)\Phi]^{n+1/2}$ can be approximated by $\{[(\vect{U}\cdot \nabla)\Phi]^n + [(\vect{U}\cdot \nabla)\Phi]^{n+1}\}/2$ and then discretized using central difference scheme. It can also be computed explicitly using upwind or WENO scheme introduced in the previous section. The Crank Nicolson scheme is second order accurate in time and space, and it is also unconditionally stable. Due to these features, Crank Nicolson scheme is the preferable method for solving the scalar field.
 
-Different from the pure advection-diffusion equation, the reaction term adds more challenges. In many cases, the physics problem requires the underlying scalar field to be positive. For example, the concentration of a chemical species cannot be negative; the turbulence kinetic energy and dissipation rate should always be larger or equal to zero. However, due to numerical error, the existence of sink term in \Eq{scal_eqn} can easily push the solution below zero in one time step. To avoid the loss of positivity of these variables is not an easy task. Simply set a lower bound to these variable does not always work, since this strongly depends on the limitation strategy. Another alternative is to solve for the logarithms of the original variable, but one then deals with modified set of equations involving exponentials of the unknowns. A simple numerical trick is to look at the linearized equation, and then set a lower limitation for the coefficients. The principle of this approach is that one never touches the solution, just the coefficients of the linearized equations. Take \Eq{k_eqn} for turbulence kinetic energy as an example. The existence of $-\varepsilon$ on the right hand side of the equation may result in loss of positivity. Therefore, a possible modification for this equation is:
+Different from the pure advection-diffusion equation, the reaction term adds more challenges. In many cases, the physics problem requires the underlying scalar field to be positive. For example, the concentration of a chemical species cannot be negative; the turbulence kinetic energy and dissipation rate should always be larger or equal to zero. However, due to numerical error, the existence of sink term in \Eq{scal_eqn} can easily push the solution below zero in one time step. To avoid the loss of positivity of these variables is not an easy task. Simply set a lower bound to these variable does not always work, since this strongly depends on the limitation strategy. Another alternative is to solve for the logarithms of the original variable, but one then deals with modified set of equations involving exponentials of the unknowns. A simple numerical trick is to look at the linearized equation, and then set a lower limitation for the coefficients. The principle of this approach is that one never touches the solution, just the coefficients of the linearized equations. Take \Eq{eq:k_eqn} for turbulence kinetic energy as an example. The existence of $-\varepsilon$ on the right hand side of the equation may result in loss of positivity. Therefore, a possible modification for this equation is:
 \begin{equation}
 \frac{\partial k}{\partial t}
 +\nabla\cdot(k\mathbf{U}
 -(\nu+\frac{\nu_T}{\delta_k})\nabla k) 
 = P_k - \gamma_k k
-\label{mdf_k_eqn}
+\label{eq:k_eqn}
 \end{equation}
-where $\gamma_k = \max(0, \varepsilon/k)$. If \Eq{mdf_k_eqn} is solved with implicit method, the solution must keeps its positivity. Similar technique can be easily generalized to other reaction equations.
+where $\gamma_k = \max(0, \varepsilon/k)$. If \Eq{eq:k_eqn} is solved with implicit method, the solution must keeps its positivity. Similar technique can be easily generalized to other reaction equations.
 
 \section{Numerical method for ordinary differential system}
-The equations for the particle system are essentially ordinary differential equations (ODEs), and hence most numerical scheme for ODEs can be applied, such as linear multistep methods \cite{}, Runge-Kutta methods \cite{} and boundary value methods \cite{}. However, the difficulties of solving an ODE lies on its stiffness, that is including some terms that can lead to rapid variation in the solution, and these terms may cause numerical unstable in some situations. The behavior of numerical methods on stiff problem can be analyzed by applying these methods to the test equation
+The equations for the particle system are essentially ordinary differential equations (ODEs), and hence most numerical scheme for ODEs can be applied, such as linear multistep methods, Runge-Kutta methods \cite{Butcher2003Numerical} and boundary value methods \cite{Brugnano1998Boundary}. However, the difficulties of solving an ODE lies on its stiffness, that is including some terms that can lead to rapid variation in the solution, and these terms may cause numerical unstable in some situations. The behavior of numerical methods on stiff problem can be analyzed by applying these methods to the test equation
 \begin{equation}
 y' = k y
 \label{test_eqn}
@@ -144,7 +141,7 @@ where $y(0) = 1$ and $k \in \mathcal{C}$. Let $h$ denotes the time step and $z =
 y_{n+1} = y_n + h\sum_{i=1}^sb_ik_i\\
 k_i = f(t_n+c_ih, y_n + h\sum_{j=1}^{s}a_{ij}k_j)
 \end{eqnarray}
-A Runge-Kutta method can be determined by putting all the coefficients in the Butcher tableau\cite{}:
+A Runge-Kutta method can be determined by putting all the coefficients in the Butcher tableau\cite{Butcher2003Numerical}:
 \begin{equation}
 \begin{array}{c|cccc}
 c_1 & a_{11} & a_{12} & \cdots & a_{1s} \\
@@ -193,9 +190,9 @@ The Backward differentiation formulas (BDF) methods are implicit methods with $\
 \begin{equation}
 y_{n+1} - \frac{4}{3}y_{n} + \frac{1}{3}y_{n-1} = \frac{2}{3}hf(t_{n+1},y_{n+1})
 \end{equation}
-It has been proved that explicit methods can never be A-stable. An implicit multistep method can only be A-stable if their order is at most $2$, while an A-stable Runge-Kutta method can have arbitrarily high order \cite{Hairer1993}. The difficulty of exceeding second order of an A-stable multistep methods is called Dahlquist barrier \cite{Dahlquist1963, Dahlquist1956}.
+It has been proved that explicit methods can never be A-stable. An implicit multistep method can only be A-stable if their order is at most $2$, while an A-stable Runge-Kutta method can have arbitrarily high order \cite{Hairer1991Solving}. The difficulty of exceeding second order of an A-stable multistep methods is called Dahlquist barrier \cite{Dahlquist1963, Dahlquist1956}.
 
-\item Boundary value methods are the third way between linear multistep and Runge-Kutta methods proposed in a few years ago \cite{Brugnano1998}. These class of methods transform the original initial value problem into an equivalent boundary value problem using linear multistep formula (LMF), and is able to overcome the major drawback of the linear multistep methods: Dahlquist barriers. It is known that even the original LMF is unstable, the corresponding boundary value method can be $0$-stable and A-stable, provided appropriate boundary conditions are given.
+\item Boundary value methods are the third way between linear multistep and Runge-Kutta methods proposed in a few years ago \cite{Brugnano1998Boundary}. These class of methods transform the original initial value problem into an equivalent boundary value problem using linear multistep formula (LMF), and is able to overcome the major drawback of the linear multistep methods: Dahlquist barriers. It is known that even the original LMF is unstable, the corresponding boundary value method can be $0$-stable and A-stable, provided appropriate boundary conditions are given.
 \end{enumerate}
 
 

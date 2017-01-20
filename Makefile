@@ -1,6 +1,6 @@
 proj=Dissertation
 
-$(proj).pdf: abstract.tex dedication.tex Dissertation.tex prelim.tex introduction.tex parachute.tex entrainment.tex
+$(proj).pdf: abstract.tex Dissertation.tex prelim.tex Background.tex Application.tex Results.tex Conclusion.tex
 	pdflatex $(proj)
 	bibtex $(proj)
 	pdflatex $(proj)
