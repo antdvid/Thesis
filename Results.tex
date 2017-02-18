@@ -267,18 +267,21 @@ less oscillatory.}
 \end{figure}
 
 \subsection{Collision and Folding}
-In most of our previous simulations, the parachute starts its inflation from either flat or half-folded state, which are seldom used in practice. To duplicate a realistic inflation procedure, it is desirable to start the simulation from a fully folded parachute. In the literatures, there mainly exist two approaches to fold the fabric. One is the pre-processor method based on coordinates transformation, in which one needs to input a series of transformation functions and try to avoid intersections and over-elongations. It folds simple pattern very quickly but cannot handle the complex folded shapes. A representative method is the initial metric method (IMM), which has been applied to the folding of airbag \cite{Tanavde1995Airbag, Zhang2005Airbag} and parachute \cite{Zhan2014Initial}. This method is accurate and is able to handle multi-layers. However, it requires a mapping function, which is difficult to construct for general cases, and therefore very complex, fallible, and can fold only simple patterns. Another folding approach is the simulation based method \cite{Hayashi2013Jfold, Hayashi2014Jfold, Taylor2015Using}, which predetermines the motion of several key points, and let the rest particles freely move according to the equations. This method requires preparation and calculation time but can apply to any kind of folding pattern. In consequence, we adopt the simulation-based method to prepare a physical and realistic folded canopy shape for later simulation. The success of the simulation-based folding relies on the physical, realistic nature of the folding process. Therefore, during the folding procedure, some physical characteristic of the fabric should be maintained. For example, a triangle edge of the fabric mesh should not change length by more than ten percentage in a single time step\cite{Caramana1999Construction}; the fabric should not be self-intersected during the simulation\cite{Bridson2005Robust}; the final folded fabric should have a relaxed state without inducing excessive stress and strain in the canopy that could artificially alter the canopy geometry prior to the inflation\cite{Tutt2011Finite}.
+In most of our previous simulations, the parachute starts its inflation from either flat or half-folded state, which are seldom used in practice. To duplicate a realistic inflation procedure, it is desirable to start the simulation from a fully folded parachute. In the literatures, there mainly exist two approaches to fold the fabric. One is the pre-processor method based on coordinates transformation, in which one needs to input a series of transformation functions and try to avoid intersections and over-elongations. It folds simple pattern very quickly but cannot handle the complex folded shapes. A representative one is the initial metric method (IMM), which has been applied to the folding of airbag \cite{Tanavde1995Airbag, Zhang2005Airbag} and parachute \cite{Zhan2014Initial}. This method is accurate and is able to handle multi-layers. However, it requires a mapping function, which is difficult to construct for general cases, and therefore very complex, fallible, and can fold only simple patterns. Another folding approach is the simulation based method \cite{Hayashi2013Jfold, Hayashi2014Jfold, Taylor2015Using}, which predetermines the motion of several key points, and let the rest particles freely move according to the equations. This method requires preparation and calculation time but can apply to any kind of folding pattern. In consequence, we adopt the simulation-based method to prepare a physical and realistic folded canopy shape for later simulation. The success of the simulation-based folding relies on the physical, realistic nature of the folding process. Therefore, during the folding procedure, some physical characteristic of the fabric should be maintained. For example, a triangle edge of the fabric mesh should not change length by more than ten percentage in a single time step\cite{Caramana1999Construction}; the fabric should not be self-intersected during the simulation\cite{Bridson2005Robust}; the final folded fabric should have a relaxed state without inducing excessive stress and strain in the canopy that could artificially alter the canopy geometry prior to the inflation\cite{Tutt2011Finite}.
 
-In order to generate a folded shape of the parachute canopy before the simulation of inflation, we have developed several modules to accomplish this task. Firstly, the spring-mass solver has been developed to compute the compute the coordinates and velocity of the connected particles in the mesh. An explicit fourth-order Runge-Kutta method or second-order Backward Difference Formula (BDF) method is used to solve the underlying ODEs. Secondly, a robust collision solver has been developed to prevent and resolve the fabric self-intersections during the folding procedure. \Fig{fabric_drape_compare} compares the simulation results of a draping cloth fixed in the center using or without using the collision handling function. It shows that without collision handling, the fabric has many unphysical intersections, which are completely eliminated by activating the collision handling option. Finally, a folding module is under development for different folding patterns. In fact, even one pattern of folding consists of many sub-steps and each sub-step may also contains several operations. This makes the folding process very complicated and may not be flexible enough to apply to different folding patterns. In consideration of these difficulties, we firstly developed a few ``atomic" operations, such as simple fold, drag and tuck, and then combine these atomic operations to achieve different folding steps and patterns. Many new operations may also be added into the library in the future in order to simulate a more complicated folding process.
+In order to generate a folded shape of the parachute canopy before the simulation of inflation, we have developed several modules to accomplish this task. Firstly, the spring-mass solver has been developed to compute the compute the coordinates and velocity of the connected particles in the mesh. An explicit fourth-order Runge-Kutta method or second-order Backward Difference Formula (BDF) method is used to solve the underlying ODEs. Secondly, a robust collision solver has been developed to prevent and resolve the fabric self-intersections during the folding procedure. Without collision handling, the fabric has many unphysical intersections, which are completely eliminated by activating the collision handling option. Finally, a folding module is under development for different folding patterns. In fact, even one pattern of folding consists of many sub-steps and each sub-step may also contains several operations. This makes the folding process very complicated and may not be flexible enough to apply to different folding patterns. In consideration of these difficulties, we firstly developed a few ``atomic" operations, such as simple folding, tucking and rolling, and then combine these atomic operations to achieve different folding steps and patterns. Many new operations can be added into the library in the future in order to simulate a more complicated folding process. \Fig{simple_fold} provide a illustration of different ``atomic'' operations: simple-fold, tuck-fold, z-fold and roll-fold. During the folding procedure, it is unavoidable to alter the canopy surface by stretching and twisting. Therefore, we have introduced a trivial operation, relaxing, which simply solves the ODE using implicit method for several steps, and can guarantee no excessive stress or strain are induced in the final state. 
 
 \begin{figure}[!htbp]
-\includegraphics[width=0.45\textwidth]{Figures/drape_front_wocd.jpg}
-\includegraphics[width=0.45\textwidth]{Figures/drape_front_wicd.jpg}
-\caption{Draping of a round fabric with its center fixed. The left (right) figure shows the result of draping test without (with) collision handling.}
-\label{fabric_drape_compare}
+\includegraphics[width=0.24\textwidth]{Figures/simple_fold.jpg}
+\includegraphics[width=0.24\textwidth]{Figures/tuck_fold.jpg}
+\includegraphics[width=0.24\textwidth]{Figures/z_fold.jpg}
+\includegraphics[width=0.24\textwidth]{Figures/roll_fold.jpg}
+\caption{Four different folding patterns for fabric: simple fold, tuck fold, z-fold and roll fold.}
+\label{simple_fold}
 \end{figure}
 
-There exist many ways to fold a parachute. The standard folding procedure includes three steps: flat fold, long fold, and stow into a package. These steps should be carried out one by one without interfering each other.
+There exist many ways to fold a real parachute. The standard folding procedure includes three steps: flat fold, long fold, and packing. These steps could be further splitted into a series of ``atomic'' operations. In fact, the flat fold is a combination of tucking and compressing, and long fold is essentially a rolling procedure. The packing can be approximated by a z-fold operation.
+
 \section{Results for cloud entrainment and mixing}
 \subsection{Experimental setup}
 Three different initial configurations are used to investigate
@@ -483,7 +486,15 @@ immediately expands with low probability density. This stage could be observed
 in D2 and D3, but extremely short for the rest cases. As mixing proceeds, the
 environment becomes much more homogeneous, that is most droplets stay in a
 similar environment. Finally, the environment becomes well-mixed, droplets
-completely evaporate and all the cases reach the same state.
+completely evaporate and all the cases reach the same state. 
+
+In conclusion, the shape of the cloud
+filament has no influence on the final state after the mixing but will affect
+the intermediate process. The shape also has little impact on the mixing
+process for forced turbulence, while can not be completely ignored in the
+decaying cases. The results suggest that the initial shape of cloud filaments
+should be considered as an important factor when studying mixing scenario
+without external forcing.
 
 \begin{figure}[H]\centering
 \subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_d1}}
@@ -500,13 +511,7 @@ completely evaporate and all the cases reach the same state.
 \subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_f3}}
 \caption{Evolution of supersaturation distribution for decaying turbulence
 (left column) and forced turbulence (right column). From up to bottom are case
-1, case 2 and case 3 respectively. In conclusion, the shape of the cloud
-filament has no influence on the final state after the mixing but will affect
-the intermediate process. The shape also has little impact on the mixing
-process for forced turbulence, while can not be completely ignored in the
-decaying cases. The results suggest that the initial shape of cloud filaments
-should be considered as an important factor when studying mixing scenario
-without external forcing.}\label{fig:supersat_distri} \end{figure}
+1, case 2 and case 3 respectively.}\label{fig:supersat_distri} \end{figure}
 
 \subsection{Entrainment-mixing processes}
 Following the conceptual picture contributed by \cite{Krueger1997Modeling,Grabowski1993Cumulus, Burnet2007Observational}, 
@@ -906,55 +911,3 @@ function of time. The correlation coefficients are computed following the
 Pearson product-moment correlation coefficients, which measures the linear
 correlation between two variables with positive and negative correlations
 inclusive.\label{fig:correlation}} \end{figure}
-
-\subsection{Summary}
-In this paper, a series of numerical simulation is performed to study the cloud
-entrainment and mixing phenomena. Three different configurations are compared
-with each other to inspect the influence of the initial cloudy shape on the
-cloud microphysics in the mixing process. The simulation duplicates the
-configurations in \cite{Andrejczuk2004} and \cite{Kumar2012Cloud} and agrees with their main
-results. Case 1 corresponds to \cite{Andrejczuk2004}, which is aiming to study the final
-stage of the mixing process. Case 2 tries to mimic the idealized cloud slab in
-\cite{Kumar2012Cloud}, presenting a complete view of entrainment and mixing. Case 3 is
-created by rotating case 2 with $90$ degree clockwise to show the sedimentation
-effects on the droplet spectrum.
-
-The work described in this paper almost follows the configurations in
-\cite{Kumar2012Cloud}. However, due to the Gibb's phenomena of the pseudo-spectral
-method, there is an inconsistency between the initial profile of cloud droplets
-and vapor mixing ratio in \cite{Kumar2012Cloud}, in which an artificial continuous
-function was used to connect the area of cloudy air and clear air, while the
-cloud droplets were treated as a simple slab. This inconsistency is not
-desirable and can be overcome by taking advantage of the high resolution finite
-difference WENO scheme, which is designed for problems with piecewise smooth
-solutions containing discontinuities. Therefore, we are able to perform the
-simulation with the same sharp initial interface for both cloud droplets and
-the vapor mixing ratio.
-
-All the simulation have been tested in both decaying turbulence and forced
-turbulence. The thermodynamics, cloud microphysics and mixing diagram are
-studied to make a comparison between different cases. The transient growth of
-turbulence kinetic energy due to buoyancy effects in the decaying cases agrees
-with the observation in \cite{Kumar2014Lagrangian}. The spectrum of droplets size and
-supersaturation implies that the cloudy shape effectively influence the mixing
-process in decaying turbulence by affecting the reaction time and the size
-distribution. However, this effect seems to be much smaller in the forced
-turbulence.
-
-The mixing diagram is then plotted to compare the $R$-$N$ relationship in
-different cases, which have the same final state with zero liquid water
-content. The number density in case 1 does not change for a long time due to
-its already diluted configuration. This implies that the initial reductions of
-number density in case 2 and 3 are due to dilution process. Case 2 is performed
-to duplicate the results in \cite{Kumar2014Lagrangian} for radius $15\mu m$ (note that
-their results were amended in \cite{Kumar2016Corr}). Our results disagree the
-conclusion in \cite{Kumar2014Lagrangian} but support their amendment in \cite{Kumar2016Corr},
-that is the mixing trajectories are not scattered around the homogeneous mixing
-curve. The configuration of case 3 is the same as case 2 except the direction
-of the cloud slab. The results infer that the sedimentation will accelerate the
-mixing to a certain degree when comparing with case 2. Two groups of mixing
-trajectories are observed in the results of case 3. We interpret the separation
-of the curves as an indication that the sedimentation will push the particles
-moving downwards, so as to accelerate the mixing process. The experiment
-designed to test the relationship between gravity and clustering index gives a
-better understanding of the sedimentation effect.
