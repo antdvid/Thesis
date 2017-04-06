@@ -1,5 +1,6 @@
 \chapter{Application Implementation}
-A lot of physics problems or application can be uniformly studied under the framework introduced in the previous chapters. However, for a specific problem, there are still many factors need to be considered. In this chapter, we will give detailed description of the mathematics model for each specific problem, its special treatments as well as the implementations.
+A lot of physics problems can be uniformly studied under the framework introduced in the previous chapters. However, for a specific problem, there are still many factors need to be considered. In this chapter, we give a detailed description of two specific problems: parachute simulation and entrainment-mixing simulation. The specific mathematical models as well as the implementations will be introduced in this chapter.
+
 \section{Parachute Simulation}
 Parachute simulation is a complex system coupling many aspects such as 
 elastic mechanics and fluid dynamics. Therefore, a desirable implementation should include decoupled modules handling fluid dynamics, elastic mechanics as well as their interactions. We have developed a novel particle-based cloth model to mimic the in-plane energy by introducing the concept of angular stiffness. This model is then coupled with fluid dynamics through impulse method. In order to better simulate the turbulence effects, a zero-equation turbulence model is replaced with a two-equation model. We also proposed a new 
