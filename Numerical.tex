@@ -58,11 +58,11 @@ and an analogous definition holds for the pressure $p^n_{ijk}$ ($i =
 \frac{p_{i,j,k+1}-p_{i,j,k-1}}{2\Delta z}]\\    
 \end{equation}
 
-\begin{multline}
-\Delta_h p = \frac{p_{i+1,j,k}+p_{i-1,j,k}-2p_{i,j,k}}{\Delta x^2} +
+\begin{eqnarray}[lll]
+\Delta_h p & = & \frac{p_{i+1,j,k}+p_{i-1,j,k}-2p_{i,j,k}}{\Delta x^2} +
 \frac{p_{i,j+1,k}+p_{i,j-1,k}-2p_{i,j,k}}{\Delta y^2} \\
- \quad +\frac{p_{i,j,k+1}+p_{i,j,k-1}-2p_{i,j,k}}{\Delta z^2} 
-\end{multline}
+ \quad & + & \frac{p_{i,j,k+1}+p_{i,j,k-1}-2p_{i,j,k}}{\Delta z^2} 
+\end{eqnarray}
 
 This method is appealing since it is second order in both time and space. It also prohibits errors in the pressure gradient, which could accumulate in time \cite{Guermond2006Overview}. In \Eq{dis_mom_eqn}, the nonlinear term $adv(\vect{u}) = [(\vect{u}\cdot\nabla)\vect{u}]^{n+1/2}$ at half time step is approximated by extrapolation of the results at previous steps, that is $adv^{n+1/2} = (1+\Delta t_n/(2\Delta t_{n-1}))adv^{n} -\Delta t_n/(2\Delta t_{n-1})adv^{n-1}$. Since this hyperbolic term is explicitly applied to the equation \ref{dis_mom_eqn}, a total variation diminishing (TVD) scheme is always desirable. Ignoring the notation of time, the first order upwind scheme for $\text{adv}(u_i)$ can be written as:
 \begin{equation}
@@ -195,4 +195,4 @@ It has been proved that explicit methods can never be A-stable. An implicit mult
 \item Boundary value methods are the third way between linear multistep and Runge-Kutta methods proposed in a few years ago \cite{Brugnano1998Boundary}. These class of methods transform the original initial value problem into an equivalent boundary value problem using linear multistep formula (LMF), and is able to overcome the major drawback of the linear multistep methods: Dahlquist barriers. It is known that even the original LMF is unstable, the corresponding boundary value method can be $0$-stable and A-stable, provided appropriate boundary conditions are given.
 \end{enumerate}
 
-
+In the rest of the chapters, the proposed computational platform is applied to two applications: parachute simulation and DNS of cloud entrainment mixing. Since both of the two problems can be described by PDEs and ODEs, they can be universally solved in the same computational framework even if the problems come from distinct fields.

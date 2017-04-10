@@ -2,7 +2,7 @@
 The numerical results are displayed in this chapter for both parachute simulation and DNS of cloud entrainment process. In each part, the experimental setups are firstly introduced, and then the numerical results and quantitative analysis are presented.
 
 \section{Results for parachute simulation}
-This section aims to demonstrate the improvements and features of the new parachute model. Firstly, the experimental setup are introduced including the domain size, boundary conditions, and the initialization of parachute canopy and flow field. Then the turbulent-viscosity models are incorporated to the current code and compared with the laminar-version simulation. In the meanwhile, we try to investigate the new porosity model, and compare its effects with the previous non-porous parachute. Finally, the collision handling modules are applied to the simulate the fabric collision and folding procedure.
+This section aims to demonstrate the improvements and features of the new parachute model. Firstly, the experimental setup are introduced including the domain size, boundary conditions, and the initialization of parachute canopy and flow field. Then the turbulent-viscosity models are incorporated to the current code and compared with the laminar-version simulation. In the meanwhile, we try to investigate the new porosity model, and compare its effects with the previous non-porous parachute. Finally, the collision handling modules are applied to simulate the fabric collision and folding procedure.
  
 \subsection{Experimental setup}
 The experiments are carried out in a wind tunnel, which is set to be $14m\times14m\times 40m$ as default with constant velocity at the inlet, outflow boundary condition with pressure $p = 0$ $Pa$ at the outlet, and periodic boundary condition for the rest of faces. In some situations, the periodic boundary condition can be replaced by the non-slip boundary condition or wall boundary condition. The domain size may also change for some specific reasons. As for the parachute types, we consider several descending round canopies: C-$9$, G-$11$, G-$12$, G-$14$ and T-$10$. 
@@ -266,21 +266,57 @@ less oscillatory.}
 \label{fig:compare} 
 \end{figure}
 
-\subsection{Collision and Folding}
-In most of our previous simulations, the parachute starts its inflation from either flat or half-folded state, which are seldom used in practice. To duplicate a realistic inflation procedure, it is desirable to start the simulation from a fully folded parachute. In the literatures, there mainly exist two approaches to fold the fabric. One is the pre-processor method based on coordinates transformation, in which one needs to input a series of transformation functions and try to avoid intersections and over-elongations. It folds simple pattern very quickly but cannot handle the complex folded shapes. A representative one is the initial metric method (IMM), which has been applied to the folding of airbag \cite{Tanavde1995Airbag, Zhang2005Airbag} and parachute \cite{Zhan2014Initial}. This method is accurate and is able to handle multi-layers. However, it requires a mapping function, which is difficult to construct for general cases, and therefore very complex, fallible, and can fold only simple patterns. Another folding approach is the simulation based method \cite{Hayashi2013Jfold, Hayashi2014Jfold, Taylor2015Using}, which predetermines the motion of several key points, and let the rest particles freely move according to the equations. This method requires preparation and calculation time but can apply to any kind of folding pattern. In consequence, we adopt the simulation-based method to prepare a physical and realistic folded canopy shape for later simulation. The success of the simulation-based folding relies on the physical, realistic nature of the folding process. Therefore, during the folding procedure, some physical characteristic of the fabric should be maintained. For example, a triangle edge of the fabric mesh should not change length by more than ten percentage in a single time step\cite{Caramana1999Construction}; the fabric should not be self-intersected during the simulation\cite{Bridson2005Robust}; the final folded fabric should have a relaxed state without inducing excessive stress and strain in the canopy that could artificially alter the canopy geometry prior to the inflation\cite{Tutt2011Finite}.
-
-In order to generate a folded shape of the parachute canopy before the simulation of inflation, we have developed several modules to accomplish this task. Firstly, the spring-mass solver has been developed to compute the compute the coordinates and velocity of the connected particles in the mesh. An explicit fourth-order Runge-Kutta method or second-order Backward Difference Formula (BDF) method is used to solve the underlying ODEs. Secondly, a robust collision solver has been developed to prevent and resolve the fabric self-intersections during the folding procedure. Without collision handling, the fabric has many unphysical intersections, which are completely eliminated by activating the collision handling option. Finally, a folding module is under development for different folding patterns. In fact, even one pattern of folding consists of many sub-steps and each sub-step may also contains several operations. This makes the folding process very complicated and may not be flexible enough to apply to different folding patterns. In consideration of these difficulties, we firstly developed a few ``atomic" operations, such as simple folding, tucking and rolling, and then combine these atomic operations to achieve different folding steps and patterns. Many new operations can be added into the library in the future in order to simulate a more complicated folding process. \Fig{simple_fold} provide a illustration of different ``atomic'' operations: simple-fold, tuck-fold, z-fold and roll-fold. During the folding procedure, it is unavoidable to alter the canopy surface by stretching and twisting. Therefore, we have introduced a trivial operation, relaxing, which simply solves the ODE using implicit method for several steps, and can guarantee no excessive stress or strain are induced in the final state. 
-
+\subsection{Collision handling and folding algorithm}
+In this section, the results of collision detection, collision handling, and 
+folding algorithm are presented. Firstly, we have tested the performance of 
+the collision handling algorithm. Several benchmark tests have been carried 
+out: a round fabric falling on a rigid box; a round fabric falling on strings. 
+These tests demonstrate the capability 
+of our algorithm that can universally handle the interactions between fabric 
+surface, rigid bodies and strings. \Fig{fig:collision_test} shows that the 
+collision algorithm can produce visually plausible results and successfully 
+eliminate all the intersections in the fabric. 
 \begin{figure}[!htbp]
-\includegraphics[width=0.24\textwidth]{Figures/simple_fold.jpg}
-\includegraphics[width=0.24\textwidth]{Figures/tuck_fold.jpg}
-\includegraphics[width=0.24\textwidth]{Figures/z_fold.jpg}
-\includegraphics[width=0.24\textwidth]{Figures/roll_fold.jpg}
-\caption{Four different folding patterns for fabric: simple fold, tuck fold, z-fold and roll fold.}
-\label{simple_fold}
+\includegraphics[width=0.45\columnwidth]{Figures/fabric-box.jpg}
+\includegraphics[width=0.45\columnwidth]{Figures/fabric-string.jpg}
+\caption{Benchmark test for collision detection and handling. Two cases are 
+considered: interactions of fabric with rigid body (left) and elastic (right).
+Note that the fabric's self-interactions are also handled well during the 
+collision procedure.}
+\label{fig:collision_test}
+\end{figure}
+In order to test the performance of 
+the collision algorithm on a more complicated geometry, a simulation of a fabric
+dropping from above of a rigid human model has been carried out. 
+\Fig{fig:collision_test_human} displays three frames of the simulation and shows 
+that the algorithm can well handle the collision between fabric and a non-trivial geometry.
+\begin{figure}[!htbp]\centering
+\includegraphics[width=0.3\columnwidth]{Figures/fabric-body-0.jpg}
+\includegraphics[width=0.3\columnwidth]{Figures/fabric-body-1.jpg}
+\includegraphics[width=0.3\columnwidth]{Figures/fabric-body-2.jpg}
+\caption{Three movie frames in the simulation of collision between elastic fabric and rigid human model.}
+\label{fig:collision_test_human}
 \end{figure}
 
-There exist many ways to fold a real parachute. The standard folding procedure includes three steps: flat fold, long fold, and packing. These steps could be further splitted into a series of ``atomic'' operations. In fact, the flat fold is a combination of tucking and compressing, and long fold is essentially a rolling procedure. The packing can be approximated by a z-fold operation.
+The folding algorithm is verified by close a round parachute canopy with $16$ creases. Here we name this folding pattern as ``close folding". Two groups of the folding angles are assigned corresponding to the mountain and valley crease alternatively. The final folding angle of the mountain crease is $-\pi$ and the folding angle of the valley crease is $3\pi/4$. The folding algorithm can automatically proceed and reach the desired state without any artificial controls. Three frames of the folding procedure are displayed in \Fig{fig:folding_para}. It can be seen that the canopy remains unstretched and the final state is perfectly symmetric. To explain the folding algorithm more clearly, the $16$ folding angles of the close folding are recorded and plotted in \Fig{fig:folding_angles}. The left panel is the behavior of the folding angles in the entire simulation and the right panel is a plot of the first $25$ steps. It is clear that the angles are moved randomly while gradually approach to the final state. This 
+is because the optimization algorithm is based on a random search, and hence the folding angle can not be guaranteed to move uniformly. However, this behavior would not affect the eventually folded state, and in the meanwhile, the folding angles still strictly satisfy the necessary condition of the origami design. In conclusion, this folding algorithm provides a highly flexible and universal way to design various folding patterns. Only the folding angles and creases pattern are required as inputs while the intermediate folding process is completely automatic.
+\begin{figure}[!htbp]\centering
+\includegraphics[width=0.3\columnwidth]{Figures/fold-0.jpg}
+\includegraphics[width=0.3\columnwidth]{Figures/fold-1.jpg}
+\includegraphics[width=0.3\columnwidth]{Figures/fold-2.jpg}\\
+\includegraphics[width=0.3\columnwidth]{Figures/fold-0.jpg}
+\includegraphics[width=0.3\columnwidth]{Figures/fold-flat-1.jpg}
+\includegraphics[width=0.3\columnwidth]{Figures/fold-flat-2.jpg}
+\caption{Three movie frames of the parachute canopy shape in the folding process. The upper panel displays the close of a parachute canopy and the lower panel displays the flat fold.}
+\label{fig:folding_para}
+\end{figure}
+
+\begin{figure}[!htbp]\centering
+\includegraphics[width=0.45\columnwidth]{Figures/folding-angle}
+\includegraphics[width=0.45\columnwidth]{Figures/folding-angle-zoom}
+\caption{Folding angles of the $16$ creases. Right panel shows the magnification of the irst $25$ steps.}
+\label{fig:folding_angles}
+\end{figure}
 
 \section{Results for cloud entrainment and mixing}
 \subsection{Experimental setup}
@@ -428,18 +464,12 @@ vapor mixing ratio between clear air and cloudy air, thus the transient growth
 of the deviation can hardly be observed.
 
 \begin{figure}[!htbp]\centering 
-\subcaptionbox{}{\includegraphics[width=0.4\textwidth]{Figures/tke}}
-\subcaptionbox{}{\includegraphics[width=0.4\textwidth]{Figures/num_con}}
-\end{figure}
-
-\begin{figure}[!htbp]\ContinuedFloat\centering
-\subcaptionbox{}{\includegraphics[width=0.4\textwidth]{Figures/temp_std}}
-\subcaptionbox{}{\includegraphics[width=0.4\textwidth]{Figures/temp_dsp}}
-\end{figure}
-
-\begin{figure}[!htbp]\ContinuedFloat\centering
-\subcaptionbox{}{\includegraphics[width=0.4\textwidth]{Figures/vapor_std}}
-\subcaptionbox{}{\includegraphics[width=0.4\textwidth]{Figures/vapor_dsp}}
+\includegraphics[width=0.4\textwidth]{Figures/tke}
+\includegraphics[width=0.4\textwidth]{Figures/num_con}\\
+\includegraphics[width=0.4\textwidth]{Figures/temp_std}
+\includegraphics[width=0.4\textwidth]{Figures/temp_dsp}\\
+\includegraphics[width=0.4\textwidth]{Figures/vapor_std}
+\includegraphics[width=0.4\textwidth]{Figures/vapor_dsp}
 \caption{From thermodynamics variables as a function of time. From left to right, 
 up to bottom, are turbulence kinetic energy (a), droplets number 
 concentration (b), standard deviation (c), relative dispersion (d) of 
@@ -496,19 +526,13 @@ decaying cases. The results suggest that the initial shape of cloud filaments
 should be considered as an important factor when studying mixing scenario
 without external forcing.
 
-\begin{figure}[H]\centering
-\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_d1}}
-\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_f1}}
-\end{figure}
-
-\begin{figure}[H]\ContinuedFloat\centering
-\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_d2}}
-\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_f2}}
-\end{figure}
-
-\begin{figure}[H]\ContinuedFloat\centering
-\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_d3}}
-\subcaptionbox{}{\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_f3}}
+\begin{figure}[!htbp]\centering
+\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_d1}
+\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_f1}\\
+\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_d2}
+\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_f2}\\
+\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_d3}
+\includegraphics[width=0.48\textwidth]{Figures/pdf_supersat_f3}
 \caption{Evolution of supersaturation distribution for decaying turbulence
 (left column) and forced turbulence (right column). From up to bottom are case
 1, case 2 and case 3 respectively.}\label{fig:supersat_distri} \end{figure}
@@ -743,18 +767,12 @@ the lower sample boxes by the turbulent mixing, leading to reduced volume mean
 radius and slowly decreasing number concentration.
 
 \begin{figure}[!htbp]\centering
-\subcaptionbox{}{\includegraphics[width=0.4\textwidth]{Figures/mixing_cased1}}
-\subcaptionbox{}{\includegraphics[width=0.4\textwidth]{Figures/mixing_casef1}}
-\end{figure}
-
-\begin{figure}[!htbp]\ContinuedFloat\centering
-\subcaptionbox{}{\includegraphics[width=0.4\textwidth]{Figures/mixing_cased2}}
-\subcaptionbox{}{\includegraphics[width=0.4\textwidth]{Figures/mixing_casef2}}
-\end{figure}
-
-\begin{figure}[!htbp]\ContinuedFloat\centering
-\subcaptionbox{}{\includegraphics[width=0.4\textwidth]{Figures/mixing_cased3}}
-\subcaptionbox{}{\includegraphics[width=0.4\textwidth]{Figures/mixing_casef3}}
+\includegraphics[width=0.4\textwidth]{Figures/mixing_cased1}
+\includegraphics[width=0.4\textwidth]{Figures/mixing_casef1}\\
+\includegraphics[width=0.4\textwidth]{Figures/mixing_cased2}
+\includegraphics[width=0.4\textwidth]{Figures/mixing_casef2}\\
+\includegraphics[width=0.4\textwidth]{Figures/mixing_cased3}
+\includegraphics[width=0.4\textwidth]{Figures/mixing_casef3}
 \caption{Mixing diagram for case D1, D2, D3, F1, F2 and F3. Mean cubic radius
 and mixing fraction have been calculated in 64 equal-sized samples boxes. The
 circle represent the time trajectories of $R_v^3/R_{v,0}^3$ and $N_d/N_{d,a}$
@@ -904,10 +922,69 @@ for the forced turbulence. This could be explained by the fact that the
 particle motion is almost determined by the forced turbulence flow and $S_v$
 becomes insignificant in this case.
 
-\begin{figure}[H]\centering
+\begin{figure}[!htbp]\centering
 \includegraphics[width=0.7\textwidth]{Figures/correlation} \caption{Correlation
 coefficient between vorticity magnitude and droplet number density as a
 function of time. The correlation coefficients are computed following the
 Pearson product-moment correlation coefficients, which measures the linear
 correlation between two variables with positive and negative correlations
 inclusive.\label{fig:correlation}} \end{figure}
+
+\section{Scaling performance}
+We have carried out several experiments to investigate the impacts of the
+computing platform on our main application, which highly relies on a
+few APIs (such as MPI, CUDA) and external packages (such as
+PETSc, HYPRE).  In order to distinguish their impacts on the application, we have
+created a few independent programs by including PETSc, MPI and CUDA separately.
+In the first test, a two dimensional Poisson equation was solved with PETSc as
+the KSP solver and HYPRE as the preconditioner. To test the strong scaling, we
+fix the domain size to be $4096\times 4096$ while gradually double the number
+of processors from $1$ to $1024$. The speedup of all the cases are illustrated in \Fig{petsc_speedup}, 
+which yields that the Cray supercomputer has a wider range of linear scaling than ``Intruder" cluster
+and workstation. It also suggests that the speedup will become slower
+when the machine is nearly fully occupied. We interpret this fact as a
+indicator of the limit bandwidth of the main memory which is highly slower than
+the speed of the modern CPU. The speedup of DNS with grid size $128^3$ for various 
+number of CPUs are also displayed in \Fig{petsc_speedup} for comparison. It yields 
+that the optimal speedup is achieved at $128$ number of processors.  
+
+\begin{figure}[!htbp]\center
+\includegraphics[width=0.7\textwidth]{Figures/petsc_scaling}
+\caption{The figure displays the speedup of linear solver solving 2-D Poisson equation with domain size ($4096\times 4096$) on different machines: workstation, linux cluster and Cray supercomputer. The speedups of DNS with different number of processors are also provided in the figure for comparison\label{petsc_speedup}}
+\end{figure}
+
+Another experiment tests the GPU acceleration on the cloth simulator. The GPU 
+code is implemented with CUDA library, which is a parallel computing platform 
+created by NVIDIA. We compare the computational time of solving spring model 
+for different parachute types using or without using GPU device and calculate 
+the speedup. As shown in \Tab{gpu_speedup}, using GPU device can achieve at 
+least $16$ times and up to $21$ times speedup for cloth simulation.  
+
+\begin{table}[!htbp]\center
+\small
+\begin{tabular}{lcccc}
+\hline\hline
+Parachute type & CPU/GPU & Time(s) & Avg time per step(s) & Speedup\\
+\hline
+C9 & CPU & 2805.85 & 3.39 & 1.00 \\
+{} & GPU & 131.90 & 0.16  & 21.2 \\
+
+\hline
+G11 & CPU & 5101.47 & 5.41 & 1.00 \\
+{} & GPU & 243.18 & 0.26 & 20.81 \\
+
+\hline
+Intruder & CPU & 1252.65 & 2.00 & 1.00 \\
+{} & GPU & 69.67 & 0.11 & 18.18 \\
+
+\hline
+T10 	& CPU & 5540.02 & 5.99 & 1.00 \\
+{} & GPU & 282.74 & 0.36 & 16.64\\
+
+\hline
+T11 & CPU & 6791.9 & 5.12 & 1.00 \\
+{} & GPU & 352.07 & 0.29 & 17.66\\
+\hline
+\end{tabular}
+\caption{A comparison of computational time between different parachute type on CPU or GPU. The speedup is calculated based on the computing time by CPU. \label{gpu_speedup}}
+\end{table}
