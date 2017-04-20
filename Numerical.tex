@@ -1,5 +1,5 @@
 \chapter{Numerical Method}
-The success of the computational fluid dynamics highly depends on the underlying numerical method. Until now, various numerical methods have been proposed to solve the partial differential equation and ordinary differential equation. However, instead of applying a general approach, some special techniques are usually required for a specific problem. In this chapter, the numerical method for Navier-Stokes equation, advection-diffusion-reaction equation and ordinary differential equation are introduced. In the meanwhile, the criteria of their convergence and stability are also discussed.
+The success of the computational fluid dynamics highly depends on the underlying numerical method. Until now, various numerical methods have been proposed to solve the partial differential equation and ordinary differential equation. However, instead of applying a general approach, some special techniques are usually required for a specific problem. In this chapter, the numerical methods for Navier-Stokes equation, advection-diffusion-reaction equation and ordinary differential equation are introduced. In the meanwhile, the criteria of their convergence and stability are also discussed.
 
 \section{Projection method for incompressible Navier-Stokes equation}
 A major difficulty for the numerical simulation of incompressible flows is that the velocity and the pressure are coupled by the incompressibility constraint \cite{Guermond2006Overview}. In 1960s, Chorin and Temam proposed the fraction-step method in their work \cite{Temam1969approximation, Chorin1968Numerical} to overcome the difficulty in time-dependent viscous incompressible flow. In their method, the velocity and pressure are decoupled at each time step, and consequently only a sequence of decoupled elliptic equation are needed to solve. This makes the projection method very efficient for large scale numerical simulation.
@@ -39,7 +39,7 @@ Step 3: Update new velocity
 \begin{equation} \mathbf{u}^{n+1} = \mathbf{u}^* -
 \frac{\Delta t}{\rho}\nabla_h p^{n+1/2} \end{equation}
 
-A convenient choice to discretize $\vect{u}$ and $p$ in space is to use finite difference method on regular computational grid. Let $\mathbf{u}^n_{ijk}$ represent the
+A convenient choice to discretize $\vect{u}$ and $p$ in space is to use finite difference method on a regular computational grid \cite{blazek2015computational}. Let $\mathbf{u}^n_{ijk}$ represent the
 numerical solution of velocity field at grid node  $\mathbf{x}_{i,j,k} =
 [L_x+(i+0.5)\Delta x,L_y+(j+0.5)\Delta y, L_z+(k+0.5)\Delta z]$ at time $t^n$ 
 and an analogous definition holds for the pressure $p^n_{ijk}$ ($i =
@@ -64,7 +64,7 @@ and an analogous definition holds for the pressure $p^n_{ijk}$ ($i =
  \quad & + & \frac{p_{i,j,k+1}+p_{i,j,k-1}-2p_{i,j,k}}{\Delta z^2} 
 \end{eqnarray}
 
-This method is appealing since it is second order in both time and space. It also prohibits errors in the pressure gradient, which could accumulate in time \cite{Guermond2006Overview}. In \Eq{dis_mom_eqn}, the nonlinear term $adv(\vect{u}) = [(\vect{u}\cdot\nabla)\vect{u}]^{n+1/2}$ at half time step is approximated by extrapolation of the results at previous steps, that is $adv^{n+1/2} = (1+\Delta t_n/(2\Delta t_{n-1}))adv^{n} -\Delta t_n/(2\Delta t_{n-1})adv^{n-1}$. Since this hyperbolic term is explicitly applied to the equation \ref{dis_mom_eqn}, a total variation diminishing (TVD) scheme is always desirable. Ignoring the notation of time, the first order upwind scheme for $\text{adv}(u_i)$ can be written as:
+This method is appealing since it is second order in both time and space. It also prohibits errors in the pressure gradient, which could accumulate in time \cite{Guermond2006Overview}. In \Eq{dis_mom_eqn}, the nonlinear term $adv(\vect{u}) = [(\vect{u}\cdot\nabla)\vect{u}]^{n+1/2}$ at half time step is approximated by extrapolation of the results at previous steps, that is $adv^{n+1/2} = (1+\Delta t_n/(2\Delta t_{n-1}))adv^{n} -\Delta t_n/(2\Delta t_{n-1})adv^{n-1}$. Since this hyperbolic term is explicitly applied to the equation \ref{dis_mom_eqn}, a total variation diminishing (TVD) scheme \cite{harten1983high} is always desirable. Ignoring the notation of time, the first order upwind scheme for $\text{adv}(u_i)$ can be written as:
 \begin{equation}
 \text{adv}(u_i) = u_i^+ u_x^- + u_i^- u_x^+ 
 	  + v_i^+ u_y^- + v_i^- u_y^+
@@ -72,7 +72,7 @@ This method is appealing since it is second order in both time and space. It als
 \label{upwind_adv}
 \end{equation}
 where $u_i^+ = \max(u_i, 0)$ and $u_i^- = \min(u_i, 0)$; $u_x^+ = (u_{i+1}-u_{i})/\Delta x$ and $u_x^- = (u_i - u_{i-1})/\Delta x$.
-A fifth order weighted essential non-oscillatory (WENO) scheme is another popular class of finite difference scheme for numerically approximate solutions of hyperbolic conservation laws due to its high order accuracy in smooth regions and essentially non-oscillatory transition for discontinuities. Its third order version was first introduced in \cite{Liu1994Weighted}, and then extended to arbitrary order accurate in \cite{Jiang1996Efficient}. According to the WENO scheme \cite{Jiang1996Efficient}, the computation of the hyperbolic term $\text{adv}(u) = uu_x + vu_y + wu_z$ can be generalized to the computation of the derivative of a flux function $f(u)$, which can be either linear (as the last two terms 
+A fifth order weighted essential non-oscillatory (WENO) scheme is another popular class of finite difference scheme for numerically approximate solutions of hyperbolic conservation laws due to its high order accuracy in smooth regions and essentially non-oscillatory transition for discontinuities \cite{jiang1999high}. Its third order version was first introduced in \cite{Liu1994Weighted}, and then extended to arbitrary order accurate in \cite{Jiang1996Efficient}. According to the WENO scheme \cite{Jiang1996Efficient}, the computation of the hyperbolic term $\text{adv}(u) = uu_x + vu_y + wu_z$ can be generalized to the computation of the derivative of a flux function $f(u)$, which can be either linear (as the last two terms 
 $vu_y$ and $wu_z$) or nonlinear (the first term written as $(u^2/2)_x$).
 For a general flux $f(u)$, its derivative with respect to $x$ can be written as 
 \begin{equation}
@@ -105,7 +105,7 @@ and
 The reconstruction to $u_{i+1/2}^-$ is mirror symmetric with respect to $x_i$ of the above procedure. The WENO scheme has been generalized to various types of schemes, and have been applied to various fields including computational fluid dynamics.
 
 \section{Numerical method for advection-diffusion-reaction equation}
-The convection-diffusion-reaction equation describes the flow of heat, concentration of chemical species where there is both convection, diffusion, and reaction. The numerical scheme used to solve the advection-diffusion-reaction equation is very similar to the numerical method for the Navier-Stokes equation introduced in the last section. Suppose the Crank-Nicolson scheme is still used as the time integration method, then the numerical scheme for solving \Eq{scal_eqn} is:
+The convection-diffusion-reaction equation describes the flow of heat, concentration of chemical species where there is both convection, diffusion, and reaction. The numerical scheme used to solve the advection-diffusion-reaction equation is very similar to the numerical method for the Navier-Stokes equation introduced in the last section. Suppose the Crank-Nicolson scheme \cite{crank1947practical} is still used as the time integration method, then the numerical scheme for solving \Eq{scal_eqn} is:
 \begin{equation}
 \frac{\Phi^{n+1}-\Phi^n}{\Delta t} + [(\vect{U}\cdot\nabla)\Phi]^{n+1/2} = \frac{D}{2}\nabla^2(\Phi^{n+1} + \Phi^n) + f^n
 \label{phi_disc_eqn}
@@ -128,12 +128,12 @@ Different from the pure advection-diffusion equation, the reaction term adds mor
 where $\gamma_k = \max(0, \varepsilon/k)$. If \Eq{eq:k_eqn} is solved with implicit method, the solution must keeps its positivity. Similar technique can be easily generalized to other reaction equations.
 
 \section{Numerical method for ordinary differential system}
-The equations for the particle system are essentially ordinary differential equations (ODEs), and hence most numerical scheme for ODEs can be applied, such as linear multistep methods, Runge-Kutta methods \cite{Butcher2003Numerical} and boundary value methods \cite{Brugnano1998Boundary}. However, the difficulties of solving an ODE lies on its stiffness, that is including some terms that can lead to rapid variation in the solution, and these terms may cause numerical unstable in some situations. The behavior of numerical methods on stiff problem can be analyzed by applying these methods to the test equation
+The equations for the particle system are essentially ordinary differential equations (ODEs), and hence most numerical scheme for ODEs can be applied, such as linear multistep methods \cite{Butcher2003Numerical}, Runge-Kutta methods \cite{Butcher2003Numerical} and boundary value methods \cite{Brugnano1998Boundary}. However, the difficulties of solving an ODE lies on its stiffness, that is including some terms that can lead to rapid variation in the solution, and these terms may cause numerical unstable in some situations. The behavior of numerical methods on stiff problem can be analyzed by applying these methods to the test equation
 \begin{equation}
 y' = k y
 \label{test_eqn}
 \end{equation}   
-where $y(0) = 1$ and $k \in \mathcal{C}$. Let $h$ denotes the time step and $z = hk$, by induction we have $y_n = (\Phi(z))^ny_0$. The function $\Phi$ is called the stability function and the region of $\{z\in \mathcal{C}| |\Phi(z)| < 1\}$ is called the absolute stability region. The numerical method is called A-stable if the region of absolute stability contains the set $\{ z \in \mathcal{C}| \Re(z) < 0\}$. The typical methods for solving ODE: $y' = f(t,y)$ are listed below.
+where $y(0) = 1$ and $k \in \mathcal{C}$. Let $h$ denotes the time step and $z = hk$, by induction we have $y_n = (\Phi(z))^ny_0$. The function $\Phi$ is called the stability function \cite{Butcher2003Numerical} and the region of $\{z\in \mathcal{C}| |\Phi(z)| < 1\}$ is called the absolute stability region \cite{Butcher2003Numerical}. The numerical method is called A-stable if the region of absolute stability contains the set $\{ z \in \mathcal{C}| \Re(z) < 0\}$. The typical methods for solving ODE: $y' = f(t,y)$ are listed below.
 
 \begin{enumerate}
 \item Runge-Kutta methods are a family of numerical methods used in temporal discretization for the approximation solutions of ODEs. They use intermediate steps to enhance the accuracy and can be either implicit and explicit. The general Runge-Kutta methods take the form 
@@ -180,7 +180,7 @@ Classic fourth-order explicit Runge-Kutta method:
 \end{equation}
 Note that this method does not have a step control parameters. It is also not suitable for the solution of stiff equations due to its bounded region of absolute stability. It is known that explicit Runge-Kutta methods can never be A-stable. It has been proved that Gauss-Legendre method with $s$ stage has order $2s$ and is A-stable.
 
-\item Multistep methods attempt to achieve efficiency by using the information from previous steps. A general linear multistep method takes the following form
+\item Multistep methods \cite{Butcher2003Numerical} attempt to achieve efficiency by using the information from previous steps. A general linear multistep method takes the following form
 \begin{equation}
 y_{k+1}=\sum_{i=1}^{m}\alpha_{i}y_{k+1-i}+h\sum_{i=0}^{m}\beta_{i}f\left(t_{k+1-i},y_{k+1-i}\right)
 \end{equation}

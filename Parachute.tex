@@ -1,14 +1,13 @@
 \chapter{Parachute Simulation}
 Parachute simulation is a complex system coupling many aspects such as 
-elastic mechanics and fluid dynamics. Therefore, a desirable implementation should include decoupled modules handling fluid dynamics, elastic mechanics as well as their interactions. We have developed a novel particle-based cloth model to mimic the in-plane energy by introducing the concept of angular stiffness. This model is then coupled with fluid dynamics through impulse method. In order to better simulate the turbulence effects, a zero-equation turbulence model is replaced with a two-equation model. We also proposed a new 
+elastic mechanics and fluid dynamics. Therefore, a desirable implementation should include decoupled modules handling fluid dynamics, elastic mechanics as well as their interactions. We develop a novel particle-based cloth model to mimic the in-plane energy by introducing the concept of angular stiffness. This model is then coupled with fluid dynamics through impulse method \cite{cortez1997dynamics}. In order to better simulate the turbulence effects, a zero-equation turbulence model \cite{baldwin1978thin} is replaced with a two-equation model \cite{Yakhot1986Renormalization}. We also proposed a new 
 porosity model for the fabric surface to consider the porosity effects. 
 In addition, a new collision handling function is developed to efficiently and 
 robustly treat the collision among fabric surface, rigid body and suspension lines.
 
 \section{Model Description}
-The mathematics model of the parachute simulation follows the framework in Chapter \ref{background}. The hydrodynamic behavior of a turbulent incompressible fluid is governed by the RANS equations for the mean velocity and pressure. We still consider the $k-\varepsilon$ family as the turbulence model, which automatically
-calculate the turbulence length scale \cite{WilcoxTurbulence2006}.  In standard
-$k-\varepsilon$ model, the eddy viscosity is defined as 
+The mathematics model of the parachute simulation follows the framework in Chapter \ref{background}. The aerodynamic behavior of a turbulent incompressible fluid is governed by the RANS equations for the mean velocity and pressure. We still consider the $k-\varepsilon$ family as the turbulence model, which automatically calculate the turbulence length scale \cite{WilcoxTurbulence2006}.  In standard
+$k-\varepsilon$ model, the eddy viscosity \cite{PopeTurbulent2000} is defined as 
 \begin{equation} \nu_T =
 C_{\mu}\frac{k^2}{\varepsilon}, \label{eq:nuT} 
 \end{equation} 
@@ -52,9 +51,7 @@ The coefficients are derived explicitly in the RNG procedure.
 For completeness, these coefficients are listed here as: $C_\mu = 0.0845$, $C_1 = 1.42$, $C_2=1.68$,
 $\delta_k=0.7194$, $\delta_{\varepsilon}=0.7194$. Figure \ref{fig:keps} provides 
 a illustration of the viscosity and velocity streamline computed with RNG $k-\varepsilon$ model.
-An further improvement over the RNG $k$-$\varepsilon$ model is the Realizable turbulence model, which 
-contains a new formulation for the turbulent viscosity and new transport equation for 
-the dissipation rate:
+An further improvement over the RNG $k$-$\varepsilon$ model is the Realizable turbulence model \cite{shih1995new}, which contains a new formulation for the turbulent viscosity and new transport equation for the dissipation rate:
 \begin{equation}
 \frac{\partial
 \varepsilon}{\partial t}+\nabla\cdot(\varepsilon U
@@ -74,7 +71,7 @@ $k-\varepsilon$ model \label{fig:keps}} \end{figure}
 
 Modeling of fabric surface also poses many challenges. 
 A fabric surface may fold and wrinkle, thus making it
-difficult to model than an elastic plate. We proposed a mesoscale model using
+difficult to model than an elastic plate \cite{choi2005research}. We proposed a mesoscale model using
 the spring-mass system and strengthened it by the inclusion of both tensile and
 angular stiffness, a model originally proposed by Delingette \cite{Delingette2008Triangular}.
 The mathematics model for $n$ particles system is formulated as \ref{dv_eqn} and \ref{dx_eqn}. In our new spring mass model, the formula for computing the force is:
@@ -100,14 +97,14 @@ is the tensile stiffness and
 \cot\alpha_{k}(\lambda+\mu)-\mu)}{8A_{P_0}} \label{eq:angular_stiff}
 \end{equation} 
 is the angular stiffness; $\alpha_j$ is the vertex angle in the undeformed triangle; $A_{P_0}$ is the area of triangle $T_{P_0}$. $\gamma$ and $\mu$ are the Lam\'{e}
-coefficients of the material.  These coefficients are simply related to the
+coefficients \cite{feng2013mathematical} of the material.  These coefficients are simply related to the
 physically meaningful parameters for elastic membrane,
-that is, Young's modulus $E$ and the Poisson ratio $\nu$:
+that is, Young's modulus $E$ \cite{feng2013mathematical} and the Poisson ratio $\nu$ \cite{feng2013mathematical}:
 $$\lambda=\frac{E\nu}{1-\nu^{2}} ~~~{\rm and}~~~
 \mu=\frac{E(1-\nu)}{1-\nu^{2}}.$$ 
 Young's modulus quantifies the stiffness of
-the material, whereas the Poisson ratio characterizes the material
-compressibility. The elastic force on each vertex of the spring system is
+the material \cite{feng2013mathematical}, whereas the Poisson ratio characterizes the material
+compressibility \cite{feng2013mathematical}. The elastic force on each vertex of the spring system is
 therefore derived by computing the derivative of the energy with respect 
 to the node position $\vect{P}_i$.
 
@@ -121,11 +118,9 @@ to the node position $\vect{P}_i$.
 where $\vect{e}_{ji}$ is the unit vector pointing from $\vect{P}_i$ to $\vect{P}_j$.
 The above derivation considers only one triangle, and therefore the actual spring force on vertex $P_i$ is a linear combination of the forces calculated from all the triangles containing $P_i$. 
 
-It is interesting to notice that, if the second term in \Eq{eq:v_force} is neglected, Delingette's model is almost the same model used by \cite{Kim2013Simulation} except variable tensile stiffness. Numerical study suggests that both the variation of tensile stiffness and the additional term due to angular stiffness are significant for realistic fabric simulation. Numerical implementation and testing also show that such model is robust and conforms with both the Young modulus and Poisson ratio of a given fabric material. In many literatures \cite{Baraff1998Large, Choi2005Stable}, the internal force is decomposed to several parts, such as stretch forces, shear forces and bend forces. Our model is based on the formulation for elastic membrane, and thus only the in-plane forces are considered. The bend forces are relatively small comparing to the the other forces, so that is neglected in the current model.
+It is interesting to notice that, if the second term in \Eq{eq:v_force} is neglected, Delingette's model is almost the same model used by \cite{Kim2013Simulation} except variable tensile stiffness. Numerical study suggests that both the variation of tensile stiffness \cite{Delingette2008Triangular} and the additional term due to angular stiffness \cite{Delingette2008Triangular} are significant for realistic fabric simulation. Numerical implementation and testing also show that such model is robust and conforms with both the Young modulus and Poisson ratio of a given fabric material. In many literatures \cite{Baraff1998Large, Choi2005Stable}, the internal force is decomposed to several parts, such as stretch forces, shear forces and bend forces. Our model is based on the formulation for elastic membrane, and thus only the in-plane forces are considered. The bend forces are relatively small comparing to the the other forces, so that is neglected in the current model.
 
-The parachute simulation in this paper is uniformly built based on the above model, but a few modification is needed in order to simulate different parts of the parachute system. The parachute canopy is discretized into a elements using Delaunay triangulation and then we can apply the spring mass model directly. However, the suspension lines are modeled by lists of joint mass points with their ends connecting to the canopy surface. The intensity of a real suspension line are much higher than a fabric surface, so that deserves special treatments. One attempt is to increase the tensile stiffness of the strings, but will reduce the time step size considering the numerical stability of explicit method. An alternative way is to use multiple parallel springs, which is able to increase the equivalent stiffness without affecting the numerical stability. Finally, dome-type parachute canopy are constructed from a series of fabric sectors called gores. The gores help the parachute to resemble a semisphere shape after inflation. Similar as the suspension lines, the gore boundaries are also modeled by curves with higher tensile stiffness. \Fig{fig:goremesh} demonstrates the mesh structure of such model. Each vertex point in the mesh represents a
-mass point with point mass $m$. Each edge of a triangle has a tensile stiffness.
-With the equilibrium lengths set during the initialization, the changing length
+The parachute simulation in this paper is uniformly built based on the above model, but a few modifications are needed in order to simulate different parts of the parachute system. The parachute canopy \cite{knacke1991parachute} is discretized into a elements using Delaunay triangulation \cite{lee1980two} and then we can apply the spring mass model directly. However, the suspension lines are modeled by lists of joint mass points with their ends connecting to the canopy surface. The intensity of a real suspension line are much higher than a fabric surface, so that deserves special treatments. One attempt is to increase the tensile stiffness of the strings, but will reduce the time step size considering the numerical stability of explicit method. An alternative way is to use multiple parallel springs, which is able to increase the equivalent stiffness without affecting the numerical stability. Finally, dome-type parachute canopy are constructed from a series of fabric sectors called gores \cite{knacke1991parachute}. The gores help the parachute to resemble a semisphere shape after inflation. Similar as the suspension lines, the gore boundaries are also modeled by curves with higher tensile stiffness. \Fig{fig:goremesh} displays the mesh structure of such model. Each vertex point in the mesh represents a mass point with point mass $m$. Each edge of a triangle has a tensile stiffness. With the equilibrium lengths set during the initialization, the changing length
 of each side exerts a tensile spring force on the two neighboring vertices in
 opposite directions.  Each angle of a triangle has an angular stiffness which is
 set during the initialization. An additional tensile force is generated when the
@@ -140,25 +135,25 @@ and air-drag, to the force term. The gravity force is a constant force, and thus
 \begin{equation}
 \vect{f}_{g,i} = m_i \vect{g}
 \end{equation}
-An accurate calculation of air-drag should include both the velocity shear (friction drag) and the stress (pressure drag) to the surface. However, since calculating the friction drag requires substantially more computational resources to resolve the boundary layer and its contribution to the drag force is minor in comparison with the pressure drag for the bluff body \cite{anderson1985fundamentals}, we have followed \cite{KalroTezduyar2000} to neglect the friction forces in the  current model, then the air-drag is formulated on a per-point basis:
+An accurate calculation of air-drag should include both the velocity shear (friction drag) and the stress (pressure drag) to the surface \cite{anderson1985fundamentals}. However, since calculating the friction drag requires substantially more computational resources to resolve the boundary layer and its contribution to the drag force is minor in comparison with the pressure drag for the bluff body \cite{anderson1985fundamentals}, we have followed \cite{KalroTezduyar2000} to neglect the friction forces in the  current model, then the air-drag is formulated on a per-point basis:
 \begin{equation}
 \vect{f}_{p,i} = \sigma(p_i^- - p_i^+)\vect{n} \label{eq:drag}
 \end{equation}
-where $p_i^-$ and $p_i^+$ are the pressure of point $i$ on lower and upper sides of the canopy, $\sigma$ is the mass density of canopy per unit area, and $\vect{n}$ is the unit normal vector pointing from lower to upper side of the canopy. The pressure $p^-$ and $p^+$ are calculated by making use of the left state and right state of the interface point in the front tracking method.
+where $p_i^-$ and $p_i^+$ are the pressure of point $i$ on lower and upper sides of the canopy, $\sigma$ is the mass density of canopy per unit area, and $\vect{n}$ is the unit normal vector pointing from lower to upper side of the canopy. The pressure $p^-$ and $p^+$ are calculated by making use of the left state and right state of the interface point in the front tracking method \cite{glimm1998three}.
 
 Robust dynamic cloth simulation is critically dependent on well-chosen damping forces \cite{Baraff1998Large}. A strong damping force must be applied to the spring system with strong stretch force to prevent anomalous in-plane oscillations. However, this strong damping force should confine itself solely to damping in-plane motions without affecting other forces. In previous literatures \cite{Selle2009Robust}, the in-plane damping force for point $i$ is chosen as:
 \begin{equation}
 \vect{f}_{d,i} = -k_d m_i\sum_{j \neq i}(\vect{v}_i - \vect{v}_j)^T\vect{e}_{ij}\vect{e}_{ij}
 \label{eq:damping_1} 
 \end{equation}
-It is tempting to formulate a damping function as above. However, this damping function only works for the case with fabric surface solely and gives nonsensical results for the case involving fabric connecting with strings. An alternative method is \cite{Terzopoulos1987, Terzopoulos1988, Carignan1992, Platt1988}'s treatment of cloth that used a simple viscous damping function which dissipated kinetic energy. We improve this method by subtracting the damping function with the external impulses, so that its influence on the external forces can be excluded:
+It is tempting to formulate a damping function as above. However, this damping function only works for the case with fabric surface solely and gives nonsensical results for the case involving fabric connecting with strings. An alternative method is \cite{Terzopoulos1987, Terzopoulos1988, Carignan1992, Platt1988}'s treatment of cloth that used a simple viscous damping function which dissipates kinetic energy. We improve this method by subtracting the damping function with the external impulses, so that its influence on the external forces can be excluded:
 \begin{equation}
 \vect{f}_{d,i} = -k_d m_i(\vect{v}_i-I_{ext,i})
 \end{equation}
 where $I_{ext,i}(t,\vect{x}_i) = \int_0^t (\vect{f}_{g,i} + \vect{f}_{p,i}) dt$.
 This method works well for all our cases including the joint fabric and strings, and produces visually appealing results. One problem of this method is that a linear function of velocity does not match the quartic energy functions of the continuum formulation \cite{Baraff1998Large}, but will put this as future studies in the new paper.
 
-As discussed above, the fluid affects the motion of parachute canopy through the pressure drag and friction drag on the surface. In the opposite side, the parachute canopy is treated as an internal moving boundary for the fluid field. In this dissertation, the fluid field is modeled with incompressible Navier-Stokes equation, whose dynamics is controlled by the boundary conditions. The external boundary, such as inflow, outflow, periodic and wall boundaries can be handled trivially by defining an appropriate boundary condition following the underlying numerical scheme. As for the internal boundaries, the parachute canopy, we use the normal velocity computed from the ODEs of the spring system as the boundary value. Therefore, at each time step, we solve a Dirichlet boundary problem for the Naiver-Stokes equation.
+As discussed above, the fluid affects the motion of parachute canopy through the pressure drag and friction drag on the surface. In the opposite side, the parachute canopy is treated as an internal moving boundary for the fluid field \cite{Kim2013Simulation}. In this dissertation, the fluid field is modeled with incompressible Navier-Stokes equation, whose dynamics is controlled by the boundary conditions. The external boundary, such as inflow, outflow, periodic and wall boundaries can be handled trivially by defining an appropriate boundary condition following the underlying numerical scheme. As for the internal boundaries, the parachute canopy, we use the normal velocity computed from the ODEs of the spring system as the boundary value. Therefore, at each time step, we solve a Dirichlet boundary problem for the Naiver-Stokes equation.
 
 \section{Porosity modeling}
 Although the canopy surface can be modeled using a pure particle system, a canopy surface still has many unique properties differing with a group of particles. 
@@ -181,7 +176,7 @@ homogenized porosity model based on the finite element method and applied it
 to the simulation of T-10 parachute. This method is then modified in \cite{Takizawa2012Computational} to simulate the geometric porosity (gaps and slits in ring-sail parachute) by assigning a locally-varying homogenized porosity to the canopy surface. 
 Kim and Peskin studied the influence of porosity on
 parachute stability in two dimensions \cite{Kim2006TwoDimensional}. They generalized
-the immersed boundary method to handle the porous immersed boundary by 
+the immersed boundary method \cite{peskin2002immersed} to handle the porous immersed boundary by 
 coupling it with Darcy's law \cite{Nield2013}.  Wang \cite{wang2006porous} simulated 
 three-dimensional fluid-structure interaction with porous parachute canopy using the
 LS-DYNA code in which the interface is approximated by a rigid and porous
@@ -213,7 +208,7 @@ $\Omega^+$ and $\Omega^-$ respectively; $\mathbf{n}$ is the local unit normal
 vector at the interface; $\mathbf{u}_\Gamma$ is the relative velocity between
 interface and fluid field at the interface location. For the two parameters in
 \Eq{jumpcond}, $\alpha$ is the viscous porosity coefficient and $\beta$ presents
-the inertial porosity coefficient. $\beta \neq 0$ is used in the case of
+the inertial porosity coefficient \cite{wang2006porous}. $\beta \neq 0$ is used in the case of
 turbulent flow with high Reynolds number.  Note that the sign of the subdomains
 is decided by the normal vector of surface triangles which points from
 $\Omega^+$ to $\Omega^-$.  In our application of parachute simulation, the
@@ -222,7 +217,8 @@ connected. Therefore $\Omega^+$ and $\Omega^-$ is only a valid concept locally
 for the immediate vicinity of the fabric surface.
 
 The interaction between fluid and fabric surface structure is handled by the
-impulse method \cite{KimLiLi12} on the \FronTierp platform. The jump condition
+impulse method \cite{KimLiLi12} on the \FronTierp platform \cite{BoFixGli07}. 
+The jump condition
 \Eq{jumpcond} is considered by coupling the GFM with the finite difference
 scheme at the projection step. We use the pressure-Poisson version of
 projection method because the jump condition can be applied directly to the
@@ -347,7 +343,7 @@ Resolution of collision between different parts of
 fabric surface or between fabric surface and environment is a very delicate
 problem in mathematical algorithm and computational geometry. Since all points 
 are on the surface and all points may collide with each other, collision has been 
-a major bottleneck in cloth simulation. In order to resolve fabric collision during parachute inflation process or its reverse procedure (parachute folding), we have followed the algorithm proposed by \cite{BridsonRobust2002} and implemented a collision handling function to detect and unwrap the fabric surface in each time step. Comparing with other previous methods, such as \cite{Provot1997, Volino1995}, which allow self-interference and recover from it later, this approach is based on repulsion forces and non-stiff penalty forces. It can guarantee no dynamic self-interference of cloth, and thus do not need complicated and unreliable algorithms for detecting and fixing self-intersection. Furthermore, this method is able to produce physically plausible details, such as bulk and small scale crumpling, by considering the friction forces.
+a major bottleneck in cloth simulation \cite{BridsonRobust2002}. In order to resolve fabric collision during parachute inflation process or its reverse procedure (parachute folding), we have followed the algorithm proposed by \cite{BridsonRobust2002} and implemented a collision handling function to detect and unwrap the fabric surface in each time step. Comparing with other previous methods, such as \cite{Provot1997, Volino1995}, which allow self-interference and recover from it later, this approach is based on repulsion forces and non-stiff penalty forces. It can guarantee no dynamic self-interference of cloth, and thus do not need complicated and unreliable algorithms for detecting and fixing self-intersection. Furthermore, this method is able to produce physically plausible details, such as bulk and small scale crumpling, by considering the friction forces.
 
 Our approach for collision detection/response is similar to \cite{BridsonRobust2002}, but with some key differences in the implementation. Since in the parachute simulation, various types of materials are involved in the collision, such as parachute canopy, suspension lines and rigid cargoes, a unified collision framework is required to handle their interactions. 
  
@@ -388,7 +384,7 @@ In order to save valuable space, portable fabric equipments, such as parachute
 or airbag, can be folded to a package before complete inflation. These
 equipments may have various geometric shapes and folding patterns to serve
 different functions. One folding pattern may contain several folding operations, such as flat fold, long fold and accordion fold (see \Fig{fig:folding_process} for illustration). 
-The preparation of a folded parachute state is also essential for the simulation of the parachute inflation process. However, it is a challenge to design a folding algorithm that can universally deal with all kinds of folding patterns. Based on our best knowledge, three different methods have been proposed to deal with the folding problem in the past years. A representative method is the initial metric method (IMM), see \cite{Tanavde1995Airbag, Zhang2005Airbag, Zhan2014Initial}. 
+The preparation of a folded parachute state is also essential for the simulation of the parachute inflation process. However, it is a challenge to design a folding algorithm that can universally deal with all kinds of folding patterns. Based on our best knowledge, three different methods have been proposed to deal with the folding problem in the past years. A representative method is the initial metric method (IMM) \cite{Tanavde1995Airbag, Zhang2005Airbag, Zhan2014Initial}. 
 Although with high modeling efficiency, it is very complex, fallible, and can fold only simple patterns. 
 The second method is the simulation-based approach \cite{Hayashi2013Jfold, Hayashi2014Jfold,
 Taylor2015Using}, which requires preparation and calculation time but theoretically can be

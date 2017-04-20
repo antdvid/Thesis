@@ -46,15 +46,15 @@ The computational mesh consist of two parts: the Eulerian mesh of fluid field an
 Two major settings have been applied in the wind tunnel: the drop test and the fixed-end test. In the drop test, the parachute is released at the top of the wind tunnel from either folded or unfolded shapes, and then the parachute freely falls in the tunnel until it hits the ground. This experiment aims to simulate the inflation stage of the parachute falling and study the factors affecting this procedure. The settings of drop test is close to a real situation, it, however, may terminate before the parachute reaching the stable state. Instead of free falling, the fixed-end test fixes one end of the parachute, and let the wind blow into the tunnel to inflate the canopy. This test can be used to measure the drag force on the canopy and is able to run arbitrarily long until the drag becomes stable.
   
 \subsection{Turbulent-viscosity models}
-The Reynolds number around a full-size parachute usually exceeds several millions, and hence the fluid flow has to be treated as turbulence. The turbulent-viscosity models is one of many approaches to simulate the turbulent effects. In the current parachute simulation, a two-equation model has been developed attempting to duplicate several features during the turbulence-parachute interactions. The principle of the two-equation model is to modify the viscosity coefficient in the Reynolds-averaged Navier-Stokes equation, so as to approximate the effects of Reynolds stresses. The turbulent viscosity is computed from turbulence quantities such as $k$ and $\varepsilon$, which are solved from a couple of transport equations. In this section, three types of $k-\varepsilon$ model, standard, Re-Normalisation Group (RNG), and realizable turbulence model are investigated in the parachute drop test, and meanwhile compared with the simulation results without using turbulence model, in which the viscosity is a constant. The velocity magnitude and turbulence viscosity for each model are recorded. 
+The Reynolds number around a full-size parachute usually exceeds several millions, and hence the fluid flow has to be treated as turbulence \cite{Johari05}. The turbulent-viscosity models is one of many approaches to simulate the turbulent effects. In the current parachute simulation, a two-equation model has been developed attempting to duplicate several features during the turbulence-parachute interactions. The principle of the two-equation model is to modify the viscosity coefficient in the Reynolds-averaged Navier-Stokes equation, so as to approximate the effects of Reynolds stresses. The turbulent viscosity is computed from turbulence quantities such as $k$ and $\varepsilon$, which are solved from a couple of transport equations. In this section, three types of $k-\varepsilon$ model, standard, Re-Normalisation Group (RNG), and realizable turbulence model are investigated in the parachute drop test, and meanwhile compared with the simulation results without using turbulence model, in which the viscosity is a constant. The velocity magnitude and turbulence viscosity for each model are recorded. 
 
 \Fig{turbulent_visc_vel_3ms} shows the velocity magnitude and turbulent viscosity for different models at the same time frame. When the inlet velocity is $3m/s$, it shows that all the $k-\varepsilon$ models produce similar flow patterns, and they also resemble the pattern in the simulation without using turbulence model. However, the standard model tends to predict higher velocity magnitude than the RNG model and Realizable model and the flow patterns near the parachute vent are significantly different. As for the turbulent viscosity, the standard model resembles the pattern of RNG model while its numeric value is one order of magnitude larger. It is interesting to see that, in the realizable model, the viscosity after the parachute canopy is significantly smaller than the other two models. This is because the realizable model predicts higher turbulence dissipation rate $\varepsilon$ in the parachute wake, and thus the viscosity quickly decreases according to the formula $\mu_{t} = C_{\mu}\rho k^2/\varepsilon$.
 
-\Fig{turbulent_visc_vel_10ms} shows the same test, yet with inlet velocity $10m/s$. It is reasonable that the parachutes are subjected to stronger drag force than the case of $3m/s$, and hence falls much slower. The Realizable model still predicts the smallest value of the viscosity in the wake of the parachute. However, since the inflow velocity increases, the kinetic energy and dissipation rate produced at the inlet are able to propagate further and dominate the viscosity field. As the parachute falls and interacts with the inlet flow, it pushes the turbulent viscosity field away to each side and generates vortex-like pattern.
+\Fig{turbulent_visc_vel_10ms} shows the same test, yet with inlet velocity $10m/s$. It is reasonable that the parachutes are subjected to stronger drag force than the case of $3m/s$, and hence falls much slower. The Realizable model still predicts the smallest value of the viscosity in the wake of the parachute. However, since the inflow velocity increases, the kinetic energy and dissipation rate produced at the inlet are able to propagate further and dominate the viscosity field. As the parachute falls and interacts with the inlet flow, it pushes the turbulent viscosity field away to each side and generates vortex-like pattern \cite{Johari05}.
 
 \Fig{turbulent_visc_vel_15ms} displays the velocity and viscosity field with inlet velocity $15m/s$. This test gives a real turbulence field, and therefore the predictions of the three models are expected to be reasonable. The viscosity field predicted by the RNG model resembles the standard one but with more details in the wake, while the realizable model produces a completely different viscosity field. This field results in a more chaotic velocity field than the other two cases. We also notice that using turbulence model makes the parachute drop significantly faster than the case without turbulence model. This can be explained by the fact that the turbulence viscosity plays as a friction between fluid elements, and hence reduce the velocity magnitude and the drag force.
 
-In summary, the standard $k-\varepsilon$ model assumed that the flow is fully turbulent, and the effects of molecular viscosity are negligible. This model was demonstrated to work fairly well for a wide range of wall-bounded and free shear flows. However, since the parachute canopy prevents the flow from passing through and the flow behind the parachute is less-turbulent when the inlet velocity is small, the standard model tends to overestimate the turbulent viscosity in the parachute wake. The RNG model is integrated to obtain an accurate description of how the effective turbulent transport varies with the effective Reynolds number, allowing the model to better handle low-Reynolds-number and near-wall flows. The RNG model is expected to be more responsive to the effects of rapid strain and streamline curvature than the standard model. Hence in the rapidly strained flows, it yields a lower turbulent viscosity than the standard model. The Realizable model is proposed by satisfying certain mathematical constrains on the normal stresses, consistent with the physics of turbulent flows. It is believed that the modified form of the equation for $\varepsilon$ better represents the spectral energy transfer. The performance of the model has been found to be substantially better than that of the standard model.
+In summary, the standard $k-\varepsilon$ model assumes that the flow is fully turbulent, and the effects of molecular viscosity are negligible. This model was demonstrated to work fairly well for a wide range of wall-bounded and free shear flows. However, since the parachute canopy prevents the flow from passing through and the flow behind the parachute is less-turbulent when the inlet velocity is small, the standard model tends to overestimate the turbulent viscosity in the parachute wake. The RNG model is integrated to obtain an accurate description of how the effective turbulent transport varies with the effective Reynolds number, allowing the model to better handle low-Reynolds-number and near-wall flows. The RNG model is expected to be more responsive to the effects of rapid strain and streamline curvature than the standard model. Hence in the rapidly strained flows, it yields a lower turbulent viscosity than the standard model. The Realizable model is proposed by satisfying certain mathematical constrains on the normal stresses, consistent with the physics of turbulent flows. It is believed that the modified form of the equation for $\varepsilon$ better represents the spectral energy transfer. The performance of the model has been found to be substantially better than that of the standard model.
 
 \begin{figure}[!htbp]
 \centering
@@ -377,8 +377,8 @@ temperature field and will completely follow \Eq{eq:Temp} afterwards.
 ratio and temperature for the three cases.
 
 \begin{figure}[!htbp]\centering
-\includegraphics[width=0.8\textwidth]{Figures/supersat_case123}\\
-\includegraphics[width=0.8\textwidth]{Figures/temp_case123}
+\includegraphics[width=0.95\textwidth]{Figures/supersat_case123}\\
+\includegraphics[width=0.95\textwidth]{Figures/temp_case123}
 \caption{Cross sectional view of the initial supersaturation and temperature (K) field for different cases: case 1, 2, 3 from left to right. The cloudy part occupies about half of the computational domain.\label{fig:slice_case123}}
 \end{figure}
 
@@ -483,8 +483,8 @@ droplets enter into the clear air and expand their size distribution. As mixing
 going on, since the environment is unsaturated and homogeneous, the
 distribution gradually shift to small sizes until all droplets completely
 evaporate or the background environment becomes saturated.  An important
-observation is that case D1, D2 and D3 are quite different in both reaction
-time and size distribution. However, by adding the external force, these
+observation is that case D1, D2 and D3 are quite different in size distribution. 
+However, by adding the external force, these
 difference almost disappear. This demonstrates that the role of buoyancy effect
 is overwhelmed by the external forcing and the differences in the decaying
 cases are caused by the buoyancy term in \Eq{eq:source_term}. In specific, the
@@ -539,11 +539,11 @@ without external forcing.
 
 \subsection{Entrainment-mixing processes}
 Following the conceptual picture contributed by \cite{Krueger1997Modeling,Grabowski1993Cumulus, Burnet2007Observational}, 
-the entrainment-mixing process can be described by the following sequence of states.  
-First, driven by the convective circulation, a portion of the cloudy air is replaced 
+the entrainment mixing process can be described by the following sequence of states.  
+Firstly, driven by the convective circulation, a portion of the cloudy air is replaced 
 by the environmental air. The cloud droplets are diluted and the mean radius remains 
-unchanged. Then the mixing process may evolve towards different directions depending on the mixing 
-scenario. In the homogeneous mixing, the phase relaxation of cloud water droplets is 
+unchanged. Then the cloud droplets may evaporate or grow in process of mixing, and the details 
+depends on the specific mixing mechanisms. In the homogeneous mixing, the phase relaxation of cloud water droplets is 
 slow compared to the mixing time, and hence the droplets stay in a well-mixed and 
 homogeneous environment. Before any droplets completely evaporate, the number concentration 
 of the cloud droplets remains unchanged. In the opposite scenario, inhomogeneous 
@@ -551,7 +551,8 @@ mixing, where evaporation proceeds much faster than the turbulence evolves,
 the cloud droplets are exposure to different humidity. Therefore, the number concentration 
 decreases due to the complete evaporation of some droplets, while the mean radius
 keeps the same. In reality, both scenarios can coexist in a turbulent cloud since 
-a whole spectrum of fluid timescale is present \cite{Lehmann2009}.
+a whole spectrum of fluid timescale is present \cite{Lehmann2009} and most mixing process 
+fall between the two extremes.
 
 The above mixing process can be characterized by the Damk{\"o}hler number, the ratio of 
 a fluid timescale to a thermodynamic timescale associated with the evaporation:
@@ -559,12 +560,11 @@ a fluid timescale to a thermodynamic timescale associated with the evaporation:
 \begin{equation}
 Da=\frac{\tau_{mix}}{\tau_{react}}\label{eq:DaNumber}
 \end{equation}
-where the turbulence mixing time scale can be estimated as $\tau_{mix} = (\lambda^2/\epsilon)^{1/3}$; the 
-length scale $\lambda$ is represented by the mean Taylor microscale for the cloud water, $\lambda = 
-(\lambda_1+\lambda_2+\lambda_3)/3$, $\lambda_i = \langle q_c^2\rangle^{1/2}/\langle(\partial q_c/\partial 
-x_i)^2\rangle^{1/2}$, and the dissipation rate is estimated with $\epsilon = 2\nu\langle(\nabla\times 
-\mathbf{u})^2\rangle$. The droplet evaporation time scale $\tau_{react}$ will be introduced later.
-In general, $Da\ll1$ corresponds to the homogeneous mixing while $Da\gg1$ is
+where the turbulence mixing time scale can be estimated as $\tau_{mix} = (\lambda^2/\epsilon)^{1/3}$; 
+the length scale $\lambda$ is represented by the mean Taylor microscale \cite{Andrejczuk2009} for the cloud water, $\lambda = 
+(\lambda_1+\lambda_2+\lambda_3)/3$, $\lambda_i = \langle q_c^2\rangle^{1/2}/\langle(\partial q_c/
+\partial x_i)^2\rangle^{1/2}$, and the dissipation rate is estimated with $\epsilon = 2\nu\langle(\nabla
+\times \mathbf{u})^2\rangle$. The droplet evaporation time scale $\tau_{react}$ will be introduced later. In general, $Da\ll1$ corresponds to the homogeneous mixing while $Da\gg1$ is
 the inhomogeneous one. Ambient clouds often have $Da$ between these two limits.
 
 Another dynamic measure of the occurrence probability of homogeneous or inhomogeneous 
@@ -574,7 +574,7 @@ the transition length $l^{*}$ and the Kolmogorov length scale $\eta$:
 N_{L}=\frac{l^{*}}{\eta}\label{eq:NL}
 \end{equation}
  
-where $l^{*}$ is defined as the length, at which the mixing transits from inhomogeneous 
+where $l^{*}$ is defined as the length, at which mixing transits from inhomogeneous 
 to homogeneous \cite{Lehmann2009}:
 \[
 l^{*}=\epsilon^{1/2}\tau_{react}^{3/2}
@@ -586,10 +586,10 @@ and
 $\nu$ is the kinematic viscosity and $\epsilon$ is the dissipation rate.
 
 The reaction time scale can be estimated in two ways. 
-In \cite{Andrejczuk2009, Burnet2007Observational}, $\tau_{react}$ is defined as the time that a droplet needs 
+In \cite{Andrejczuk2009, Burnet2007Observational}, it is defined as the time that a droplet needs 
 to complete the evaporation:
 \begin{equation}
-\tau_{react} = R_v(\frac{dR_v}{dt})^{-1} = \frac{R_v^2}{-KS_e}
+\tau_{evap} = R_v(\frac{dR_v}{dt})^{-1} = \frac{R_v^2}{-KS_e}
 \end{equation}
 where $R_v$ is the mean volume radius of a group of droplets; $K$ is the constant in the 
 droplet diffusional growth equation, and $S_e$ is the supersaturation of the dry air. 
@@ -599,7 +599,7 @@ can only deal with an unsaturated environmental air where $S_e$ is negative.
 
 In \cite{Lehmann2009, Lu2013}, $\tau_{react}$ is defined as the time when droplets have completely 
 evaporated or relatively humidity has reached $99.5\%$ whichever is first satisfied. It is calculated 
-by solving the following ordinary differential equation for the mean volume radius and mean supersaturation:
+by solving the following coupled ordinary differential equation for the mean volume radius and mean supersaturation:
 
 \begin{equation}
 \frac{dR_{v}}{dt}=K\frac{S}{R_{v}}\label{eq:DiffR}
@@ -625,10 +625,9 @@ $c_p$ is specific heat with pressure held constant \cite{Lu2011}.
 This definition considers the interactions between liquid water and vapor water, 
 and hence its value is expected to be smaller than the previous definition. 
 
-The homogeneous mixing can also be measured from the microphysical point of view. 
 To characterize the microphysical properties of the mixing, the $R_v^3-N_d$ 
 diagram was introduced in \cite{Burnet2007Observational} and has been widely applied to study the
-homogeneous/inhomogeneous entrainment-mixing process. To define the number 
+entrainment-mixing process. To define the number 
 density and mean volume radius, it is necessary to define a sample box. Hence 
 the computational domain is divided into $64$ equal-sized sample boxes. We keep 
 tracking the volume mean radius and number concentration at each time step in 
@@ -639,7 +638,7 @@ mixing \cite{Andrejczuk2009}, the homogeneous mixing degree can be quantified by
 of the trajectories in the diagram, and is calculated using centered differencing 
 in time:
 \begin{equation}
-\psi_0 = \frac{R_{j+1}^3/R_a^3 - R_{j-1}^3/R_a^3}{N_{j+1}/N_a - N_{j-1}/N_a}
+\psi_0 = \frac{N_{j+1}/N_a - N_{j-1}/N_a}{R_{j+1}^3/R_a^3 - R_{j-1}^3/R_a^3}
 \label{phi0}
 \end{equation}
 
@@ -723,10 +722,10 @@ content is assumed to decrease to $0.2$ of the same from last step.\label{rn_dia
 \end{figure}
  
  
-\Fig{fig:mixing_diagram} shows the mixing trajectories in the sample boxes. The 
+\Fig{fig:mixing_diagram} shows the mixing in the sample boxes. The 
 circles represent the values sampled in the each sample box at each time step; 
 the mixing trajectory from the whole DNS domain is plotted using solid 
-lines with arrows indicating the moving directions; the homogeneous mixing line and 
+lines with arrows indicating the direction of temporal evolution; the homogeneous mixing line and 
 inhomogeneous mixing line are plotted in the diagram as references. 
 In the top panel, the mixing diagram of D1 and F1 do not start from the $(1,1)$ 
 point since the initial droplets in a sample box have already been diluted and 
@@ -782,9 +781,9 @@ particles at the initial time are considered.}
 \label{fig:mixing_diagram}
 \end{figure}
 
-The transition scale number \ref{eq:NL}, Damk\"{o}hler number \ref{eq:DaNumber} and the 
-microphysical measures of homogeneous mixing degree \ref{phi0}, \ref{phi1}, \ref{phi2}, \ref{phi3}, 
-\ref{phi4} are expected to be correlated since they are two measures quantifying the probability of 
+The transition scale number , Damk\"{o}hler number and the 
+microphysical measures of homogeneous mixing degree are expected 
+to be correlated since they are measures quantifying the probability of 
 the homogeneous mixing process from different perspective. These relationship are examined using 
 the numerical data produced from case $1$, $2$, $3$ in the decaying and forced turbulence. First, 
 the slope \ref{phi0} is plotted with the Damk\"{o}hler number and transition scale number in \Fig{fig:slope_da_nl}. The left figure shows that the Damk\"{o}hler number has a positive relationship with the reciprocal of the slope. This duplicates the results in \cite{Andrejczuk2009} and is consistent with the heuristic argument relating homogeneity of mixing to the time scale ratio. We also compare the results using transition scale number and Damk\"{o}hler number as the dynamical measures in the right figure. It yields that the transition scale number has a wider range of values but gives consistent conclusion with Damk\"{o}ler number.
@@ -842,7 +841,7 @@ determined by the relative time scale or Damkohler number but also by the
 distribution of the cloud water content.
 
 \subsection{Preferential concentration}
-Clustering of inertial particles has been extensively studied via both
+The clustering of inertial particles has been extensively studied via both
 experiments and numerical simulations \cite{Sundaram1997Collision, Reade2000Effect}, but the
 sedimentation effects on the clustering are poorly understood. In this section,
 a series of numerical test are performed by gradually increasing the gravity
@@ -878,7 +877,7 @@ forced turbulence (see right figure).}
 \end{figure}
 
 Preferential concentration can also be measured with Pearson correlation
-coefficient between droplet number concentration and vorticity magnitude.
+coefficient \cite{pearson1895note} between droplet number concentration and vorticity magnitude.
 \Fig{fig:correlation} shows the correlation coefficients of four cases,
 decaying or force turbulence with or without considering sedimentation as a
 function of time. All the cases show negative correlations, which agrees with
