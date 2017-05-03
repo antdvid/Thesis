@@ -17,7 +17,7 @@
 \usepackage{color}
 \usepackage{listings}
 \usepackage{verbatim}
-\usepackage[margin=1.5in]{geometry}
+%\usepackage[margin=1.5in]{geometry}
 
 \DeclareGraphicsExtensions{.pdf,.png,.jpg,.eps}
 
@@ -62,14 +62,14 @@
 \include{prelim}
 
 \pagenumbering{arabic}
-\begin{singlespacing} % adjust spacing
+\begin{spacing}{\defaultspace} % adjust spacing
 \include{Background}
 \include{Numerical}
 \include{Parachute}
 \include{Cloud}
 \include{Results}
 \include{Conclusion}
-\end{singlespacing}
+\end{spacing}
 
 \begin{spacing}{\singlespace}
 \bibliographystyle{plain}       % plain or ieeetr
